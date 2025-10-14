@@ -22,8 +22,8 @@ mongoose.connect(process.env.MONGO_URI)
 // Rutas API
 app.use('/api/auth', authRoutes);
 
-// Catch-all: enviar index.html para cualquier otra ruta
-app.get('*', (req, res) => {
+// Catch-all: Usar middleware en lugar de ruta
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
