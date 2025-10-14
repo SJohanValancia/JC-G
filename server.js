@@ -10,19 +10,21 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+
+// ✅ Servir archivos estáticos desde la raíz del proyecto
+app.use(express.static(path.join(__dirname)));
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✓ Conectado a MongoDB'))
   .catch(err => console.error('Error conectando a MongoDB:', err));
 
-// Rutas API
+// ✅ Rutas API
 app.use('/api/auth', authRoutes);
 
-// Ruta principal
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// ✅ Ruta principal que devuelve index.html de la raíz
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
