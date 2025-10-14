@@ -22,9 +22,8 @@ mongoose.connect(process.env.MONGO_URI)
 // Rutas API
 app.use('/api/auth', authRoutes);
 
-// Catch-all: enviar index.html para rutas de frontend
-// Usa '/*' en lugar de '*' para evitar PathError en path-to-regexp
-app.get('/*', (req, res) => {
+// Catch-all: enviar index.html para cualquier otra ruta
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
