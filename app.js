@@ -1,5 +1,5 @@
 // Configuración de la API
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://jc-g.onrender.com/api';
 
 // Elementos del DOM
 const tabButtons = document.querySelectorAll('.tab-btn');
