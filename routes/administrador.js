@@ -176,4 +176,46 @@ router.put('/permisos/:usuarioId', verificarAdmin, async (req, res) => {
   }
 });
 
+// Agregar esta ruta en administrador.js o crear archivo permisos.js
+router.get('/mis-permisos', authMiddleware, async (req, res) => {
+  try {
+    // Los administradores tienen todos los permisos
+    if (req.usuario.rol === 'administrador') {
+      return res.json({
+        permisos: {
+          ganado: true,
+          aportes: true,
+          reportes: true,
+          editar_propios: true,
+          eliminar_propios: true,
+          ver_otros: true
+        }
+      });
+    }
+
+    let permisos = await Permiso.findOne({ usuario: req.usuario._id });
+
+    if (!permisos) {
+      permisos = await Permiso.create({
+        usuario: req.usuario._id,
+        empresa: req.usuario.empresa,
+        permisos: {
+          ganado: true,
+          aportes: true,
+          reportes: true,
+          editar_propios: true,
+          eliminar_propios: false,
+          ver_otros: true
+        }
+      });
+    }
+
+    res.json({ permisos: permisos.permisos });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener permisos' });
+  }
+});
+
 module.exports = router;

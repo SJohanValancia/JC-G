@@ -612,6 +612,56 @@
     <script>
         const API_URL = 'https://jc-g.onrender.com/api';
 
+
+        let permisosUsuario = {};
+
+// Cargar permisos al iniciar
+async function cargarPermisos() {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/administrador/mis-permisos`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      permisosUsuario = data.permisos;
+      actualizarUISegunPermisos();
+    }
+  } catch (error) {
+    console.error('Error cargando permisos:', error);
+  }
+}
+
+// Actualizar UI según permisos
+function actualizarUISegunPermisos() {
+  // Ocultar botones según permisos
+  if (!permisosUsuario.ganado) {
+    const btnNuevo = document.querySelector('.btn-nuevo');
+    if (btnNuevo) btnNuevo.style.display = 'none';
+  }
+
+  if (!permisosUsuario.editar_propios) {
+    document.querySelectorAll('.btn-editar').forEach(btn => {
+      btn.style.display = 'none';
+    });
+  }
+
+  if (!permisosUsuario.eliminar_propios) {
+    document.querySelectorAll('.btn-eliminar').forEach(btn => {
+      btn.style.display = 'none';
+    });
+  }
+}
+
+// Llamar en DOMContentLoaded
+document.addEventListener('DOMContentLoaded', async () => {
+  verificarAutenticacion();
+  await cargarPermisos();
+});
+
         // Verificar sesión
         const token = localStorage.getItem('token');
         const usuarioData = localStorage.getItem('usuario');

@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Ganado = require('../models/Ganado');
 const auth = require('../middleware/auth');
+const { verificarPermiso } = require('../middleware/permisos');
 
 // Obtener todo el ganado de una empresa
-router.get('/empresa/:empresaId', auth, async (req, res) => {
+router.get('/empresa/:empresaId', auth, verificarPermiso('ganado'), async (req, res) => {
   try {
     const ganado = await Ganado.find({ 
       empresa: req.params.empresaId 
@@ -20,7 +21,7 @@ router.get('/empresa/:empresaId', auth, async (req, res) => {
 });
 
 // Obtener un animal específico
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', auth, verificarPermiso('ganado'), async (req, res) => {
   try {
     const animal = await Ganado.findById(req.params.id)
       .populate('usuarioRegistro', 'nombreUsuario')
@@ -38,7 +39,7 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 // Registrar nuevo animal
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, verificarPermiso('ganado'), async (req, res) => {
   try {
     const ganado = await Ganado.create({
       ...req.body,
@@ -56,7 +57,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 // Actualizar animal
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', auth, verificarPermiso('editar_propios'), async (req, res) => {
   try {
     const ganado = await Ganado.findById(req.params.id);
 
@@ -67,6 +68,12 @@ router.put('/:id', auth, async (req, res) => {
     // Verificar que pertenece a la misma empresa
     if (ganado.empresa.toString() !== req.usuario.empresa.toString()) {
       return res.status(403).json({ error: 'No autorizado' });
+    }
+
+    // Solo puede editar sus propios registros (excepto admin)
+    if (req.usuario.rol !== 'administrador' && 
+        ganado.usuarioRegistro.toString() !== req.usuario._id.toString()) {
+      return res.status(403).json({ error: 'Solo puedes editar tus propios registros' });
     }
 
     Object.assign(ganado, req.body);
@@ -84,7 +91,7 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 // Eliminar animal
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', auth, verificarPermiso('eliminar_propios'), async (req, res) => {
   try {
     const ganado = await Ganado.findById(req.params.id);
 
@@ -97,6 +104,12 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(403).json({ error: 'No autorizado' });
     }
 
+    // Solo puede eliminar sus propios registros (excepto admin)
+    if (req.usuario.rol !== 'administrador' && 
+        ganado.usuarioRegistro.toString() !== req.usuario._id.toString()) {
+      return res.status(403).json({ error: 'Solo puedes eliminar tus propios registros' });
+    }
+
     await Ganado.findByIdAndDelete(req.params.id);
 
     res.json({ mensaje: 'Animal eliminado exitosamente' });
@@ -107,7 +120,7 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 // Obtener estadísticas
-router.get('/estadisticas/empresa/:empresaId', auth, async (req, res) => {
+router.get('/estadisticas/empresa/:empresaId', auth, verificarPermiso('reportes'), async (req, res) => {
   try {
     const ganado = await Ganado.find({ empresa: req.params.empresaId });
 
@@ -123,19 +136,15 @@ router.get('/estadisticas/empresa/:empresaId', auth, async (req, res) => {
     let contadorPeso = 0;
 
     ganado.forEach(animal => {
-      // Por especie
       estadisticas.porEspecie[animal.especie] = 
         (estadisticas.porEspecie[animal.especie] || 0) + 1;
 
-      // Por género
       estadisticas.porGenero[animal.genero] = 
         (estadisticas.porGenero[animal.genero] || 0) + 1;
 
-      // Por estado
       estadisticas.porEstado[animal.estado] = 
         (estadisticas.porEstado[animal.estado] || 0) + 1;
 
-      // Peso promedio
       if (animal.peso) {
         pesoTotal += animal.peso;
         contadorPeso++;

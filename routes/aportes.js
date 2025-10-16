@@ -2,16 +2,15 @@ const express = require('express');
 const router = express.Router();
 const Aporte = require('../models/Aporte');
 const authMiddleware = require('../middleware/auth');
+const { verificarPermiso } = require('../middleware/permisos');
 
-// Middleware de autenticación para todas las rutas
 router.use(authMiddleware);
 
 // Crear nuevo aporte
-router.post('/', async (req, res) => {
+router.post('/', verificarPermiso('aportes'), async (req, res) => {
   try {
     const { monto, descripcion, empresa } = req.body;
 
-    // Validaciones
     if (!monto || monto <= 0) {
       return res.status(400).json({ 
         error: 'El monto debe ser mayor a 0' 
@@ -24,14 +23,12 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Verificar que el usuario pertenezca a la empresa
     if (req.usuario.empresa.toString() !== empresa) {
       return res.status(403).json({ 
         error: 'No tienes permiso para registrar aportes en esta empresa' 
       });
     }
 
-    // Crear aporte
     const aporte = await Aporte.create({
       monto,
       descripcion,
@@ -39,7 +36,6 @@ router.post('/', async (req, res) => {
       usuario: req.usuario._id
     });
 
-    // Poblar datos del usuario
     await aporte.populate('usuario', 'nombreUsuario');
 
     res.status(201).json(aporte);
@@ -51,11 +47,10 @@ router.post('/', async (req, res) => {
 });
 
 // Obtener todos los aportes de una empresa
-router.get('/empresa/:empresaId', async (req, res) => {
+router.get('/empresa/:empresaId', verificarPermiso('aportes'), async (req, res) => {
   try {
     const { empresaId } = req.params;
 
-    // Verificar que el usuario pertenezca a la empresa
     if (req.usuario.empresa.toString() !== empresaId) {
       return res.status(403).json({ 
         error: 'No tienes permiso para ver los aportes de esta empresa' 
@@ -64,7 +59,7 @@ router.get('/empresa/:empresaId', async (req, res) => {
 
     const aportes = await Aporte.find({ empresa: empresaId })
       .populate('usuario', 'nombreUsuario')
-      .sort({ fecha: -1 }); // Más recientes primero
+      .sort({ fecha: -1 });
 
     res.json(aportes);
 
@@ -75,7 +70,7 @@ router.get('/empresa/:empresaId', async (req, res) => {
 });
 
 // Obtener un aporte específico
-router.get('/:id', async (req, res) => {
+router.get('/:id', verificarPermiso('aportes'), async (req, res) => {
   try {
     const aporte = await Aporte.findById(req.params.id)
       .populate('usuario', 'nombreUsuario')
@@ -85,7 +80,6 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Aporte no encontrado' });
     }
 
-    // Verificar que el usuario pertenezca a la empresa del aporte
     if (req.usuario.empresa.toString() !== aporte.empresa._id.toString()) {
       return res.status(403).json({ 
         error: 'No tienes permiso para ver este aporte' 
@@ -101,7 +95,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Actualizar un aporte
-router.put('/:id', async (req, res) => {
+router.put('/:id', verificarPermiso('editar_propios'), async (req, res) => {
   try {
     const { monto, descripcion } = req.body;
     const aporte = await Aporte.findById(req.params.id);
@@ -110,14 +104,12 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Aporte no encontrado' });
     }
 
-    // Solo el creador puede editar
     if (aporte.usuario.toString() !== req.usuario._id.toString()) {
       return res.status(403).json({ 
         error: 'Solo puedes editar tus propios aportes' 
       });
     }
 
-    // Verificar empresa
     if (req.usuario.empresa.toString() !== aporte.empresa.toString()) {
       return res.status(403).json({ 
         error: 'No tienes permiso para editar este aporte' 
@@ -139,7 +131,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Eliminar un aporte
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verificarPermiso('eliminar_propios'), async (req, res) => {
   try {
     const aporte = await Aporte.findById(req.params.id);
 
@@ -147,7 +139,6 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Aporte no encontrado' });
     }
 
-    // Solo el creador o administrador puede eliminar
     if (aporte.usuario.toString() !== req.usuario._id.toString() && 
         req.usuario.rol !== 'administrador') {
       return res.status(403).json({ 

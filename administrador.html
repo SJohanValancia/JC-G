@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="admin-styles.css">
 </head>
 <body>
+
+    <button class="btn-drawer" id="btnDrawer">☰</button>
+
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -184,5 +187,23 @@
     </div>
 
     <script src="administrador.js"></script>
+    <script>
+  const btnDrawer = document.getElementById('btnDrawer');
+  const sidebar = document.querySelector('.sidebar');
+
+  btnDrawer.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+  });
+
+  // Cierra el drawer al hacer clic en un enlace (móvil)
+  document.querySelectorAll('.nav-item').forEach(link => {
+    link.addEventListener('click', () => sidebar.classList.remove('open'));
+  });
+
+  // Cierra el drawer si se redimensiona a escritorio
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) sidebar.classList.remove('open');
+  });
+</script>
 </body>
 </html>
