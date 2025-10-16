@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - JC-G</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🐄</span>
+                    <h2>JC-G</h2>
+                </div>
+                <p class="empresa-nombre" id="empresaNombre"></p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/ganado.html" class="nav-item">
+                    <span class="nav-icon">🐄</span>
+                    <span>Ganado</span>
+                </a>
+                <a href="/aportes.html" class="nav-item">
+                    <span class="nav-icon">💰</span>
+                    <span>Aportes</span>
+                </a>
+                <a href="/administrador.html" class="nav-item active">
+                    <span class="nav-icon">👥</span>
+                    <span>Administración</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <span class="user-icon">👤</span>
+                    <div>
+                        <p class="user-name" id="userName"></p>
+                        <p class="user-role">Administrador</p>
+                    </div>
+                </div>
+                <button class="btn-logout" id="btnLogout">
+                    <span>🚪</span> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Panel de Administración</h1>
+                <p class="subtitle">Gestiona usuarios y permisos de tu empresa</p>
+            </header>
+
+            <!-- Loading -->
+            <div id="loadingContainer" class="loading-container">
+                <div class="spinner"></div>
+                <p>Cargando usuarios...</p>
+            </div>
+
+            <!-- Error -->
+            <div id="errorContainer" class="error-container" style="display: none;">
+                <p id="errorMessage"></p>
+                <button class="btn-retry" onclick="cargarUsuarios()">Reintentar</button>
+            </div>
+
+            <!-- Usuarios Grid -->
+            <div id="usuariosGrid" class="usuarios-grid" style="display: none;"></div>
+        </main>
+    </div>
+
+    <!-- Modal de Permisos -->
+    <div id="permisosModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Gestionar Permisos</h2>
+                <button class="modal-close" onclick="cerrarModalPermisos()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="usuario-info-modal">
+                    <p><strong>Usuario:</strong> <span id="modalUsuarioNombre"></span></p>
+                    <p><strong>Rol:</strong> <span id="modalUsuarioRol"></span></p>
+                </div>
+
+                <h3>Permisos del Sistema</h3>
+                <div class="permisos-lista">
+                    <div class="permiso-item">
+                        <div class="permiso-info">
+                            <span class="permiso-icon">🐄</span>
+                            <div>
+                                <h4>Gestión de Ganado</h4>
+                                <p>Crear, editar y eliminar registros de animales</p>
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" data-permiso="ganado">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="permiso-item">
+                        <div class="permiso-info">
+                            <span class="permiso-icon">💰</span>
+                            <div>
+                                <h4>Gestión de Aportes</h4>
+                                <p>Registrar y administrar aportes económicos</p>
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" data-permiso="aportes">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="permiso-item">
+                        <div class="permiso-info">
+                            <span class="permiso-icon">📊</span>
+                            <div>
+                                <h4>Ver Reportes</h4>
+                                <p>Acceso a estadísticas y reportes generales</p>
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" data-permiso="reportes">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="permiso-item">
+                        <div class="permiso-info">
+                            <span class="permiso-icon">📝</span>
+                            <div>
+                                <h4>Editar Datos Propios</h4>
+                                <p>Modificar sus propios registros de aportes y ganado</p>
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" data-permiso="editar_propios">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="permiso-item">
+                        <div class="permiso-info">
+                            <span class="permiso-icon">🗑️</span>
+                            <div>
+                                <h4>Eliminar Datos Propios</h4>
+                                <p>Eliminar sus propios registros</p>
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" data-permiso="eliminar_propios">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="permiso-item">
+                        <div class="permiso-info">
+                            <span class="permiso-icon">👁️</span>
+                            <div>
+                                <h4>Ver Datos de Otros</h4>
+                                <p>Consultar información registrada por otros usuarios</p>
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" data-permiso="ver_otros">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="cerrarModalPermisos()">Cancelar</button>
+                <button class="btn-primary" onclick="guardarPermisos()">Guardar Permisos</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="administrador.js"></script>
+</body>
+</html>

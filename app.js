@@ -108,6 +108,7 @@ function updateFooterText() {
 }
 
 // Manejar login
+// Manejar login
 async function handleLogin(e) {
     e.preventDefault();
     
@@ -147,9 +148,13 @@ async function handleLogin(e) {
         // Mostrar mensaje de éxito
         showSuccess(`¡Bienvenido ${result.usuario.nombreUsuario}! Redirigiendo...`);
         
-        // Redirigir al dashboard
+        // Redirigir según el rol
         setTimeout(() => {
-            window.location.href = '/dashboard.html';
+            if (result.usuario.rol === 'administrador') {
+                window.location.href = '/administrador.html';
+            } else {
+                window.location.href = '/dashboard.html';
+            }
         }, 1500);
         
     } catch (error) {
@@ -157,7 +162,6 @@ async function handleLogin(e) {
         setLoading(btn, false);
     }
 }
-
 // Manejar registro
 async function handleRegister(e) {
     e.preventDefault();

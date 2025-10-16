@@ -6,6 +6,7 @@ const path = require('path');
 const authRoutes = require('./routes/auth');
 const aportesRoutes = require('./routes/aportes'); // NUEVO
 const ganadoRoutes = require('./routes/ganado');
+const administradorRoutes = require('./routes/administrador'); 
 
 const app = express();
 
@@ -25,6 +26,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/aportes', aportesRoutes); // NUEVO
 app.use('/api/ganado', ganadoRoutes);
+app.use('/api/administrador', administradorRoutes);
 
 // Ruta de salud/prueba
 app.get('/api/health', (req, res) => {
