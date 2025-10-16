@@ -43,10 +43,26 @@ function checkSession() {
     const usuario = localStorage.getItem('usuario');
     
     if (token && usuario) {
-        const user = JSON.parse(usuario);
-        console.log('Usuario logueado:', user);
-        console.log('Empresa:', user.empresa.nombre);
-        // window.location.href = '/dashboard.html';
+        try {
+            const user = JSON.parse(usuario);
+            
+            // Verificar que tenga la estructura correcta (con empresa)
+            if (user.empresa && user.empresa.nombre) {
+                console.log('Usuario logueado:', user);
+                console.log('Empresa:', user.empresa.nombre);
+                // window.location.href = '/dashboard.html';
+            } else {
+                // Limpiar datos viejos si no tiene la estructura correcta
+                console.log('Datos de sesión inválidos, limpiando...');
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+            }
+        } catch (error) {
+            // Si hay error al parsear, limpiar localStorage
+            console.log('Error al leer datos de sesión, limpiando...');
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+        }
     }
 }
 

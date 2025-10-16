@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const authRoutes = require('./routes/auth');
+const aportesRoutes = require('./routes/aportes'); // NUEVO
 
 const app = express();
 
@@ -21,14 +22,30 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Rutas API
 app.use('/api/auth', authRoutes);
+app.use('/api/aportes', aportesRoutes); // NUEVO
 
-// Catch-all: Usar middleware en lugar de ruta
+// Ruta de salud/prueba
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'API JC-G funcionando correctamente',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Catch-all: Servir index.html para rutas no encontradas (debe ir al final)
 app.use((req, res) => {
+  // Si es una ruta de API que no existe, enviar JSON
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Ruta de API no encontrada' });
+  }
+  // Si no, servir el HTML
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Puerto dinámico para Render o 5000 local
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+  console.log(`📡 API disponible en http://localhost:${PORT}/api`);
 });

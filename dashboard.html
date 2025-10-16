@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - JC-G</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-section {
+            flex: 1;
+        }
+
+        .greeting {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a472a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .time-emoji {
+            font-size: 32px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .user-info {
+            font-size: 16px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .empresa-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(45, 80, 22, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 80, 22, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #2d5016;
+            border: 2px solid #2d5016;
+        }
+
+        .btn-secondary:hover {
+            background: #2d5016;
+            color: white;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            animation: fadeIn 0.8s ease 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a472a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .aportes-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .aporte-item {
+            background: #f8f9fa;
+            border-left: 4px solid #2d5016;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .aporte-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .aporte-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .aporte-monto {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2d5016;
+        }
+
+        .aporte-usuario {
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .aporte-descripcion {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .aporte-fecha {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            animation: fadeInOverlay 0.3s ease;
+        }
+
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.4s ease;
+            position: relative;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            margin-bottom: 30px;
+        }
+
+        .modal-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a472a;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-modal:hover {
+            background: #f0f0f0;
+            color: #333;
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2d5016;
+            box-shadow: 0 0 0 4px rgba(45, 80, 22, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #aaa;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        .success-toast {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 18px 28px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            z-index: 2000;
+            animation: slideInRight 0.4s ease;
+            display: none;
+            font-weight: 600;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="header">
+            <div class="welcome-section">
+                <div class="greeting">
+                    <span class="time-emoji" id="timeEmoji">🌅</span>
+                    <span id="greetingText">¡Buenos días!</span>
+                </div>
+                <div class="user-info">
+                    <strong id="userName">Usuario</strong>
+                </div>
+                <div class="empresa-badge">
+                    🏢 <span id="empresaName">Empresa</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" id="btnNuevoAporte">
+                    💰 Nuevo Aporte
+                </button>
+                <button class="btn btn-secondary" id="btnCerrarSesion">
+                    🚪 Salir
+                </button>
+            </div>
+        </header>
+
+        <div class="content-grid">
+            <div class="card">
+                <h2 class="card-title">
+                    📊 Resumen Financiero
+                </h2>
+                <div style="padding: 20px; text-align: center;">
+                    <div style="font-size: 14px; color: #666; margin-bottom: 8px;">Total Aportes</div>
+                    <div style="font-size: 48px; font-weight: 700; color: #2d5016;" id="totalAportes">$0</div>
+                    <div style="font-size: 14px; color: #999; margin-top: 8px;" id="cantidadAportes">0 aportes registrados</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">
+                    💵 Aportes Recientes
+                </h2>
+                <div class="aportes-list" id="aportesList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🐄</div>
+                        <p>No hay aportes registrados aún</p>
+                        <p style="font-size: 13px; margin-top: 8px;">Haz clic en "Nuevo Aporte" para comenzar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Aporte -->
+    <div class="modal-overlay" id="modalAporte">
+        <div class="modal">
+            <button class="close-modal" id="closeModal">×</button>
+            <div class="modal-header">
+                <h3 class="modal-title">💰 Registrar Nuevo Aporte</h3>
+                <p class="modal-subtitle">Los datos serán visibles para toda la empresa</p>
+            </div>
+
+            <div class="error-message" id="modalError"></div>
+
+            <form id="aporteForm">
+                <div class="form-group">
+                    <label class="form-label" for="monto">Monto ($)</label>
+                    <input 
+                        type="number" 
+                        class="form-input" 
+                        id="monto" 
+                        placeholder="Ej: 1500000"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="descripcion">Descripción</label>
+                    <textarea 
+                        class="form-input" 
+                        id="descripcion" 
+                        placeholder="¿Para qué es este aporte?"
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelarAporte">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="guardarAporte">
+                        <span class="btn-text">Guardar Aporte</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="success-toast" id="successToast">
+        ✓ Aporte registrado exitosamente
+    </div>
+
+    <script>
+        const API_URL = 'https://jc-g.onrender.com/api';
+
+        // Verificar sesión
+        const token = localStorage.getItem('token');
+        const usuarioData = localStorage.getItem('usuario');
+
+        if (!token || !usuarioData) {
+            window.location.href = '/index.html';
+        }
+
+        const usuario = JSON.parse(usuarioData);
+
+        // Configurar saludo según hora
+        function setGreeting() {
+            const hour = new Date().getHours();
+            const greetingText = document.getElementById('greetingText');
+            const timeEmoji = document.getElementById('timeEmoji');
+
+            if (hour >= 5 && hour < 12) {
+                greetingText.textContent = '¡Buenos días!';
+                timeEmoji.textContent = '🌅';
+            } else if (hour >= 12 && hour < 19) {
+                greetingText.textContent = '¡Buenas tardes!';
+                timeEmoji.textContent = '☀️';
+            } else {
+                greetingText.textContent = '¡Buenas noches!';
+                timeEmoji.textContent = '🌙';
+            }
+        }
+
+        // Configurar datos del usuario
+        document.getElementById('userName').textContent = usuario.nombreUsuario;
+        document.getElementById('empresaName').textContent = usuario.empresa.nombre;
+        setGreeting();
+
+        // Modal
+        const modal = document.getElementById('modalAporte');
+        const btnNuevoAporte = document.getElementById('btnNuevoAporte');
+        const closeModal = document.getElementById('closeModal');
+        const cancelarAporte = document.getElementById('cancelarAporte');
+        const aporteForm = document.getElementById('aporteForm');
+
+        btnNuevoAporte.addEventListener('click', () => {
+            modal.classList.add('active');
+            aporteForm.reset();
+            document.getElementById('modalError').style.display = 'none';
+        });
+
+        closeModal.addEventListener('click', () => modal.classList.remove('active'));
+        cancelarAporte.addEventListener('click', () => modal.classList.remove('active'));
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('active');
+        });
+
+        // Cerrar sesión
+        document.getElementById('btnCerrarSesion').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            window.location.href = '/index.html';
+        });
+
+        // Guardar aporte
+        aporteForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const monto = parseFloat(document.getElementById('monto').value);
+            const descripcion = document.getElementById('descripcion').value.trim();
+
+            if (monto <= 0) {
+                showError('El monto debe ser mayor a 0');
+                return;
+            }
+
+            const btn = document.getElementById('guardarAporte');
+            const btnText = btn.querySelector('.btn-text');
+            btn.disabled = true;
+            btnText.innerHTML = '<span class="loading-spinner"></span> Guardando...';
+
+            try {
+                const response = await fetch(`${API_URL}/aportes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        monto,
+                        descripcion,
+                        empresa: usuario.empresa.id,
+                        usuario: usuario.id
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Error al guardar el aporte');
+                }
+
+                showSuccess('¡Aporte registrado exitosamente!');
+                modal.classList.remove('active');
+                aporteForm.reset();
+                loadAportes();
+
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Guardar Aporte';
+            }
+        });
+
+        // Cargar aportes
+        async function loadAportes() {
+            try {
+                const response = await fetch(`${API_URL}/aportes/empresa/${usuario.empresa.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const aportes = await response.json();
+
+                if (aportes.length === 0) {
+                    document.getElementById('aportesList').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🐄</div>
+                            <p>No hay aportes registrados aún</p>
+                            <p style="font-size: 13px; margin-top: 8px;">Haz clic en "Nuevo Aporte" para comenzar</p>
+                        </div>
+                    `;
+                    document.getElementById('totalAportes').textContent = '$0';
+                    document.getElementById('cantidadAportes').textContent = '0 aportes registrados';
+                    return;
+                }
+
+                const total = aportes.reduce((sum, a) => sum + a.monto, 0);
+                document.getElementById('totalAportes').textContent = formatMoney(total);
+                document.getElementById('cantidadAportes').textContent = `${aportes.length} ${aportes.length === 1 ? 'aporte registrado' : 'aportes registrados'}`;
+
+                const html = aportes.map(aporte => `
+                    <div class="aporte-item">
+                        <div class="aporte-header">
+                            <span class="aporte-monto">${formatMoney(aporte.monto)}</span>
+                            <span class="aporte-usuario">👤 ${aporte.usuario.nombreUsuario}</span>
+                        </div>
+                        <div class="aporte-descripcion">${aporte.descripcion}</div>
+                        <div class="aporte-fecha">📅 ${formatDate(aporte.fecha)}</div>
+                    </div>
+                `).join('');
+
+                document.getElementById('aportesList').innerHTML = html;
+
+            } catch (error) {
+                console.error('Error al cargar aportes:', error);
+            }
+        }
+
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return new Intl.DateTimeFormat('es-CO', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('modalError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function showSuccess(message) {
+            const toast = document.getElementById('successToast');
+            toast.textContent = '✓ ' + message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Cargar aportes al iniciar
+        loadAportes();
+
+        // Actualizar cada 30 segundos
+        setInterval(loadAportes, 30000);
+    </script>
+</body>
+</html>
