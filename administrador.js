@@ -287,3 +287,4 @@ window.onclick = function(event) {
         cerrarModalPermisos();
     }
 }
+

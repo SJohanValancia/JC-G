@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Gastos - JC-G</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+    <link rel="stylesheet" href="gastos-styles.css">
+</head>
+<body>
+
+    <button class="btn-drawer" id="btnDrawer">☰</button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🐄</span>
+                    <h2>JC-G</h2>
+                </div>
+                <p class="empresa-nombre" id="empresaNombre"></p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/ganado.html" class="nav-item">
+                    <span class="nav-icon">🐄</span>
+                    <span>Ganado</span>
+                </a>
+                <a href="/aportes.html" class="nav-item">
+                    <span class="nav-icon">💰</span>
+                    <span>Aportes</span>
+                </a>
+                <a href="/gastos.html" class="nav-item active">
+                    <span class="nav-icon">💸</span>
+                    <span>Gastos</span>
+                </a>
+                <a href="/administrador.html" class="nav-item" id="adminLink" style="display: none;">
+                    <span class="nav-icon">👥</span>
+                    <span>Administración</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <span class="user-icon">👤</span>
+                    <div>
+                        <p class="user-name" id="userName"></p>
+                        <p class="user-role" id="userRole">Empleado</p>
+                    </div>
+                </div>
+                <button class="btn-logout" id="btnLogout">
+                    <span>🚪</span> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>💸 Gestión de Gastos</h1>
+                <p class="subtitle">Registra y administra los gastos de tu empresa ganadera</p>
+            </header>
+
+            <!-- Estadísticas -->
+            <div class="stats-container" id="statsContainer" style="display: none;">
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Total Gastado</p>
+                        <p class="stat-value" id="totalGastado">$0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Total Gastos</p>
+                        <p class="stat-value" id="totalGastos">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Promedio</p>
+                        <p class="stat-value" id="promedioGasto">$0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Registro -->
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>📝 Registrar Nuevos Gastos</h2>
+                </div>
+                <div class="form-body">
+                    <div class="form-group cantidad-group">
+                        <label for="cantidadGastos">¿Cuántos gastos deseas registrar?</label>
+                        <div class="cantidad-input-group">
+                            <input type="number" id="cantidadGastos" min="1" max="10" value="1" class="input-cantidad">
+                            <button class="btn-generar" id="btnGenerar">
+                                <span>✨</span> Generar Campos
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="gastosInputsContainer" class="gastos-inputs-container">
+                        <!-- Los campos se generarán dinámicamente aquí -->
+                    </div>
+
+                    <div class="form-actions" id="formActions" style="display: none;">
+                        <button class="btn-cancelar" id="btnCancelar">
+                            <span>❌</span> Cancelar
+                        </button>
+                        <button class="btn-guardar" id="btnGuardar">
+                            <span>💾</span> Guardar Gastos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Gastos -->
+            <div class="gastos-lista-container">
+                <div class="lista-header">
+                    <h2>📋 Historial de Gastos</h2>
+                    <div class="filtros-container">
+                        <select id="filtroCategoria" class="filtro-select">
+                            <option value="">Todas las categorías</option>
+                            <option value="alimentacion">Alimentación</option>
+                            <option value="veterinario">Veterinario</option>
+                            <option value="mantenimiento">Mantenimiento</option>
+                            <option value="transporte">Transporte</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Loading -->
+                <div id="loadingContainer" class="loading-container">
+                    <div class="spinner"></div>
+                    <p>Cargando gastos...</p>
+                </div>
+
+                <!-- Error -->
+                <div id="errorContainer" class="error-container" style="display: none;">
+                    <p id="errorMessage"></p>
+                    <button class="btn-retry" onclick="cargarGastos()">Reintentar</button>
+                </div>
+
+                <!-- Lista de Gastos -->
+                <div id="gastosLista" class="gastos-lista" style="display: none;">
+                    <!-- Los gastos se mostrarán aquí -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div id="editModal" class="modal">
+        <div class="modal-content modal-edit">
+            <div class="modal-header">
+                <h2>✏️ Editar Gasto</h2>
+                <button class="modal-close" onclick="cerrarModalEdicion()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editDescripcion">Descripción</label>
+                    <input type="text" id="editDescripcion" class="input-field" required>
+                </div>
+                <div class="form-group">
+                    <label for="editMonto">Monto ($)</label>
+                    <input type="number" id="editMonto" class="input-field" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="editCategoria">Categoría</label>
+                    <select id="editCategoria" class="input-field">
+                        <option value="alimentacion">Alimentación</option>
+                        <option value="veterinario">Veterinario</option>
+                        <option value="mantenimiento">Mantenimiento</option>
+                        <option value="transporte">Transporte</option>
+                        <option value="otros">Otros</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editFecha">Fecha</label>
+                    <input type="date" id="editFecha" class="input-field" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="cerrarModalEdicion()">Cancelar</button>
+                <button class="btn-primary" onclick="guardarEdicion()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="gastos.js"></script>
+    <script>
+        const btnDrawer = document.getElementById('btnDrawer');
+        const sidebar = document.querySelector('.sidebar');
+
+        btnDrawer.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.addEventListener('click', () => sidebar.classList.remove('open'));
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) sidebar.classList.remove('open');
+        });
+    </script>
+</body>
+</html>

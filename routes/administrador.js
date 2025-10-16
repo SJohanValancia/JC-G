@@ -49,6 +49,7 @@ router.get('/usuarios', verificarAdmin, async (req, res) => {
             permisos: {
               ganado: true,
               aportes: true,
+              gastos: true,
               reportes: true,
               editar_propios: true,
               eliminar_propios: false,
@@ -102,6 +103,7 @@ router.get('/permisos/:usuarioId', verificarAdmin, async (req, res) => {
         permisos: {
           ganado: true,
           aportes: true,
+          gastos: true,
           reportes: true,
           editar_propios: true,
           eliminar_propios: false,
@@ -185,6 +187,7 @@ router.get('/mis-permisos', authMiddleware, async (req, res) => {
         permisos: {
           ganado: true,
           aportes: true,
+          gastos: true,
           reportes: true,
           editar_propios: true,
           eliminar_propios: true,
@@ -202,6 +205,7 @@ router.get('/mis-permisos', authMiddleware, async (req, res) => {
         permisos: {
           ganado: true,
           aportes: true,
+          gastos: true,
           reportes: true,
           editar_propios: true,
           eliminar_propios: false,
@@ -217,5 +221,21 @@ router.get('/mis-permisos', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Error al obtener permisos' });
   }
 });
+
+if (!permisos) {
+  permisos = await Permiso.create({
+    usuario: usuario._id,
+    empresa: empresaId,
+    permisos: {
+      ganado: true,
+      aportes: true,
+      gastos: true,
+      reportes: true,
+      editar_propios: true,
+      eliminar_propios: false,
+      ver_otros: true
+    }
+  });
+}
 
 module.exports = router;

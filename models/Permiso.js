@@ -21,6 +21,10 @@ const permisoSchema = new mongoose.Schema({
       type: Boolean,
       default: true
     },
+    gastos: {
+      type: Boolean,
+      default: true
+    },
     reportes: {
       type: Boolean,
       default: true
