@@ -534,7 +534,7 @@
                 🐄 JC-G
             </a>
             <ul class="navbar-menu">
-                <li><a href="/dashboard.html" class="navbar-link">📊 Dashboard</a></li>
+                <li><a href="/dashboard.html" class="navbar-link">📊 aportes</a></li>
                 <li><a href="/ganado.html" class="navbar-link active">🐮 Gestión de Ganado</a></li>
             </ul>
         </div>
@@ -645,23 +645,20 @@
                             class="form-input" 
                             id="identificacion" 
                             placeholder="Ej: BOV-001"
-                            required
+                            
                         >
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="especie">Especie *</label>
-                        <select class="form-select" id="especie" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="Bovino">Bovino</option>
-                            <option value="Porcino">Porcino</option>
-                            <option value="Ovino">Ovino</option>
-                            <option value="Caprino">Caprino</option>
-                            <option value="Equino">Equino</option>
-                            <option value="Aviar">Aviar</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
+                 <div class="form-group">
+    <label class="form-label" for="especie">Especie *</label>
+    <input 
+        type="text" 
+        class="form-input" 
+        id="especie" 
+        placeholder="Ej: Bovino, Porcino, etc."
+        required
+    >
+</div>
                 </div>
 
                 <div class="form-row">
@@ -755,7 +752,7 @@
     <div class="success-toast" id="successToast"></div>
 
     <script>
-        const API_URL = 'http://localhost:3000/api';
+         const API_URL = 'https://jc-g.onrender.com/api';
         let ganadoData = [];
         let empresaId = null;
 

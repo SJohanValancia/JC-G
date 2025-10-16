@@ -3,15 +3,13 @@ const mongoose = require('mongoose');
 const ganadoSchema = new mongoose.Schema({
   identificacion: {
     type: String,
-    required: true,
     trim: true
   },
-  especie: {
-    type: String,
-    required: true,
-    enum: ['Bovino', 'Porcino', 'Ovino', 'Caprino', 'Equino', 'Aviar', 'Otro'],
-    default: 'Bovino'
-  },
+especie: {
+  type: String,
+  required: true,
+  trim: true
+},
   raza: {
     type: String,
     trim: true
