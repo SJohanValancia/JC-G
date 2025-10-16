@@ -4,7 +4,29 @@ const Aporte = require('../models/Aporte');
 const authMiddleware = require('../middleware/auth');
 const { verificarPermiso } = require('../middleware/permisos');
 
+
 router.use(authMiddleware);
+
+const { filtroVisibilidad } = require('../middleware/filtros');
+
+// Listar aportes
+router.get('/empresa/:empresaId', verificarPermiso('aportes'), async (req, res) => {
+  try {
+    if (req.usuario.empresa.toString() !== req.params.empresaId)
+      return res.status(403).json({ error: 'No autorizado' });
+
+    const filter = { empresa: req.params.empresaId, ...filtroVisibilidad(req) };
+
+    const aportes = await Aporte.find(filter)
+                                .populate('usuario', 'nombreUsuario')
+                                .sort({ fecha: -1 });
+
+    res.json(aportes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener los aportes' });
+  }
+});
 
 // Crear nuevo aporte
 router.post('/', verificarPermiso('aportes'), async (req, res) => {
@@ -46,28 +68,6 @@ router.post('/', verificarPermiso('aportes'), async (req, res) => {
   }
 });
 
-// Obtener todos los aportes de una empresa
-router.get('/empresa/:empresaId', verificarPermiso('aportes'), async (req, res) => {
-  try {
-    const { empresaId } = req.params;
-
-    if (req.usuario.empresa.toString() !== empresaId) {
-      return res.status(403).json({ 
-        error: 'No tienes permiso para ver los aportes de esta empresa' 
-      });
-    }
-
-    const aportes = await Aporte.find({ empresa: empresaId })
-      .populate('usuario', 'nombreUsuario')
-      .sort({ fecha: -1 });
-
-    res.json(aportes);
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al obtener los aportes' });
-  }
-});
 
 // Obtener un aporte específico
 router.get('/:id', verificarPermiso('aportes'), async (req, res) => {

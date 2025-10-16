@@ -609,68 +609,68 @@
         ✓ Aporte registrado exitosamente
     </div>
 
-    <script>
-        const API_URL = 'https://jc-g.onrender.com/api';
+<script>
+    const API_URL = 'https://jc-g.onrender.com/api';
+    let permisosUsuario = {};
 
-
-        let permisosUsuario = {};
-
-// Cargar permisos al iniciar
-async function cargarPermisos() {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/administrador/mis-permisos`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      permisosUsuario = data.permisos;
-      actualizarUISegunPermisos();
-    }
-  } catch (error) {
-    console.error('Error cargando permisos:', error);
-  }
-}
-
-// Actualizar UI según permisos
-function actualizarUISegunPermisos() {
-  // Ocultar botones según permisos
-  if (!permisosUsuario.ganado) {
-    const btnNuevo = document.querySelector('.btn-nuevo');
-    if (btnNuevo) btnNuevo.style.display = 'none';
-  }
-
-  if (!permisosUsuario.editar_propios) {
-    document.querySelectorAll('.btn-editar').forEach(btn => {
-      btn.style.display = 'none';
-    });
-  }
-
-  if (!permisosUsuario.eliminar_propios) {
-    document.querySelectorAll('.btn-eliminar').forEach(btn => {
-      btn.style.display = 'none';
-    });
-  }
-}
-
-// Llamar en DOMContentLoaded
-document.addEventListener('DOMContentLoaded', async () => {
-  verificarAutenticacion();
-  await cargarPermisos();
-});
-
-        // Verificar sesión
+    // Verificar autenticación
+    function verificarAutenticacion() {
         const token = localStorage.getItem('token');
         const usuarioData = localStorage.getItem('usuario');
 
         if (!token || !usuarioData) {
             window.location.href = '/index.html';
+            return false;
+        }
+        return true;
+    }
+
+    // Cargar permisos al iniciar
+    async function cargarPermisos() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_URL}/administrador/mis-permisos`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                permisosUsuario = data.permisos;
+                actualizarUISegunPermisos();
+            }
+        } catch (error) {
+            console.error('Error cargando permisos:', error);
+        }
+    }
+
+    // Actualizar UI según permisos
+    function actualizarUISegunPermisos() {
+        // Ocultar botón de nuevo aporte si no tiene permiso
+        if (!permisosUsuario.aportes) {
+            const btnNuevo = document.getElementById('btnNuevoAporte');
+            if (btnNuevo) {
+                btnNuevo.style.display = 'none';
+            }
         }
 
-        const usuario = JSON.parse(usuarioData);
+        // Si no puede ver reportes, ocultar la sección de resumen
+        if (!permisosUsuario.reportes) {
+            const resumenCard = document.querySelector('.card');
+            if (resumenCard) {
+                resumenCard.style.display = 'none';
+            }
+        }
+    }
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (!verificarAutenticacion()) return;
+        
+        await cargarPermisos();
+        
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
 
         // Configurar saludo según hora
         function setGreeting() {
@@ -703,6 +703,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const aporteForm = document.getElementById('aporteForm');
 
         btnNuevoAporte.addEventListener('click', () => {
+            if (!permisosUsuario.aportes) {
+                alert('No tienes permiso para crear aportes');
+                return;
+            }
             modal.classList.add('active');
             aporteForm.reset();
             document.getElementById('modalError').style.display = 'none';
@@ -726,6 +730,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         aporteForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            if (!permisosUsuario.aportes) {
+                alert('No tienes permiso para crear aportes');
+                return;
+            }
+
             const monto = parseFloat(document.getElementById('monto').value);
             const descripcion = document.getElementById('descripcion').value.trim();
 
@@ -734,6 +743,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
+            const token = localStorage.getItem('token');
             const btn = document.getElementById('guardarAporte');
             const btnText = btn.querySelector('.btn-text');
             btn.disabled = true;
@@ -776,11 +786,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Cargar aportes
         async function loadAportes() {
             try {
+                const token = localStorage.getItem('token');
                 const response = await fetch(`${API_URL}/aportes/empresa/${usuario.empresa.id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar aportes');
+                }
 
                 const aportes = await response.json();
 
@@ -858,6 +873,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Actualizar cada 30 segundos
         setInterval(loadAportes, 30000);
-    </script>
+    });
+</script>
 </body>
 </html>

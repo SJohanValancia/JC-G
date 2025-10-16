@@ -751,345 +751,382 @@
     <!-- Toast de Éxito -->
     <div class="success-toast" id="successToast"></div>
 
-    <script>
-         const API_URL = 'https://jc-g.onrender.com/api';
-        let ganadoData = [];
-        let empresaId = null;
+<script>
+    const API_URL = 'https://jc-g.onrender.com/api';
+    let ganadoData = [];
+    let empresaId = null;
+    let permisosUsuario = {};
 
-        let permisosUsuario = {};
+    // Verificar autenticación
+    function verificarAutenticacion() {
+        const token = localStorage.getItem('token');
+        const usuarioData = localStorage.getItem('usuario');
 
-// Cargar permisos al iniciar
-async function cargarPermisos() {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/administrador/mis-permisos`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      permisosUsuario = data.permisos;
-      actualizarUISegunPermisos();
+        if (!token || !usuarioData) {
+            window.location.href = '/index.html';
+            return false;
+        }
+        return true;
     }
-  } catch (error) {
-    console.error('Error cargando permisos:', error);
-  }
-}
 
-// Actualizar UI según permisos
-function actualizarUISegunPermisos() {
-  // Ocultar botones según permisos
-  if (!permisosUsuario.ganado) {
-    const btnNuevo = document.querySelector('.btn-nuevo');
-    if (btnNuevo) btnNuevo.style.display = 'none';
-  }
-
-  if (!permisosUsuario.editar_propios) {
-    document.querySelectorAll('.btn-editar').forEach(btn => {
-      btn.style.display = 'none';
-    });
-  }
-
-  if (!permisosUsuario.eliminar_propios) {
-    document.querySelectorAll('.btn-eliminar').forEach(btn => {
-      btn.style.display = 'none';
-    });
-  }
-}
-
-
-
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', async () => {
-
-              verificarAutenticacion();
-  await cargarPermisos();
-
+    // Cargar permisos al iniciar
+    async function cargarPermisos() {
+        try {
             const token = localStorage.getItem('token');
-            if (!token) {
-                window.location.href = '/login.html';
-                return;
-            }
-
-            // Obtener datos del usuario
-            const usuario = JSON.parse(localStorage.getItem('usuario'));
-            if (usuario && usuario.empresa) {
-                empresaId = usuario.empresa.id;
-                document.getElementById('empresaName').textContent = usuario.empresa.nombre;
-                await cargarGanado();
-                await cargarEstadisticas();
-            }
-
-            // Event Listeners
-            document.getElementById('btnNuevoAnimal').addEventListener('click', abrirModalNuevo);
-            document.getElementById('closeModal').addEventListener('click', cerrarModal);
-            document.getElementById('cancelarAnimal').addEventListener('click', cerrarModal);
-            document.getElementById('animalForm').addEventListener('submit', guardarAnimal);
-            document.getElementById('searchInput').addEventListener('input', filtrarTabla);
-
-            // Cerrar modal al hacer clic fuera
-            document.getElementById('modalAnimal').addEventListener('click', (e) => {
-                if (e.target.id === 'modalAnimal') {
-                    cerrarModal();
+            const response = await fetch(`${API_URL}/administrador/mis-permisos`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
             });
+
+            if (response.ok) {
+                const data = await response.json();
+                permisosUsuario = data.permisos;
+                actualizarUISegunPermisos();
+            }
+        } catch (error) {
+            console.error('Error cargando permisos:', error);
+        }
+    }
+
+    // Actualizar UI según permisos
+    function actualizarUISegunPermisos() {
+        // Ocultar botón de nuevo animal si no tiene permiso
+        if (!permisosUsuario.ganado) {
+            const btnNuevo = document.getElementById('btnNuevoAnimal');
+            if (btnNuevo) {
+                btnNuevo.style.display = 'none';
+            }
+        }
+
+        // Ocultar botones de editar si no tiene permiso
+        if (!permisosUsuario.editar_propios) {
+            document.querySelectorAll('.btn-editar').forEach(btn => {
+                btn.style.display = 'none';
+            });
+        }
+
+        // Ocultar botones de eliminar si no tiene permiso
+        if (!permisosUsuario.eliminar_propios) {
+            document.querySelectorAll('.btn-danger').forEach(btn => {
+                btn.style.display = 'none';
+            });
+        }
+    }
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (!verificarAutenticacion()) return;
+        
+        await cargarPermisos();
+
+        // Obtener datos del usuario
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        if (usuario && usuario.empresa) {
+            empresaId = usuario.empresa.id;
+            document.getElementById('empresaName').textContent = usuario.empresa.nombre;
+            await cargarGanado();
+            await cargarEstadisticas();
+        }
+
+        // Event Listeners
+        document.getElementById('btnNuevoAnimal').addEventListener('click', abrirModalNuevo);
+        document.getElementById('closeModal').addEventListener('click', cerrarModal);
+        document.getElementById('cancelarAnimal').addEventListener('click', cerrarModal);
+        document.getElementById('animalForm').addEventListener('submit', guardarAnimal);
+        document.getElementById('searchInput').addEventListener('input', filtrarTabla);
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modalAnimal').addEventListener('click', (e) => {
+            if (e.target.id === 'modalAnimal') {
+                cerrarModal();
+            }
         });
+    });
 
-        // Cargar ganado
-        async function cargarGanado() {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_URL}/ganado/empresa/${empresaId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+    // Cargar ganado
+    async function cargarGanado() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_URL}/ganado/empresa/${empresaId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-                if (!response.ok) throw new Error('Error al cargar ganado');
+            if (!response.ok) throw new Error('Error al cargar ganado');
 
-                ganadoData = await response.json();
-                renderizarTabla(ganadoData);
-            } catch (error) {
-                console.error('Error:', error);
-                mostrarError('Error al cargar el ganado');
-            }
+            ganadoData = await response.json();
+            renderizarTabla(ganadoData);
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error al cargar el ganado');
         }
+    }
 
-        // Cargar estadísticas
-        async function cargarEstadisticas() {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_URL}/ganado/estadisticas/empresa/${empresaId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+    // Cargar estadísticas
+    async function cargarEstadisticas() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_URL}/ganado/estadisticas/empresa/${empresaId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-                if (!response.ok) throw new Error('Error al cargar estadísticas');
+            if (!response.ok) throw new Error('Error al cargar estadísticas');
 
-                const stats = await response.json();
-                
-                document.getElementById('statTotal').textContent = stats.total;
-                document.getElementById('statActivos').textContent = stats.porEstado?.Activo || 0;
-                document.getElementById('statPeso').textContent = stats.pesoPromedio + ' kg';
-                document.getElementById('statTratamiento').textContent = stats.porEstado?.['En tratamiento'] || 0;
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-
-        // Renderizar tabla
-        function renderizarTabla(data) {
-            const tbody = document.getElementById('ganadoTableBody');
+            const stats = await response.json();
             
-            if (data.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="8">
-                            <div class="empty-state">
-                                <div class="empty-state-icon">🐄</div>
-                                <p>No hay animales registrados</p>
-                                <p style="font-size: 13px; margin-top: 8px;">Haz clic en "Registrar Animal" para comenzar</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
+            document.getElementById('statTotal').textContent = stats.total;
+            document.getElementById('statActivos').textContent = stats.porEstado?.Activo || 0;
+            document.getElementById('statPeso').textContent = stats.pesoPromedio + ' kg';
+            document.getElementById('statTratamiento').textContent = stats.porEstado?.['En tratamiento'] || 0;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
 
-            tbody.innerHTML = data.map(animal => `
+    // Renderizar tabla
+    function renderizarTabla(data) {
+        const tbody = document.getElementById('ganadoTableBody');
+        
+        if (data.length === 0) {
+            tbody.innerHTML = `
                 <tr>
-                    <td><strong>${animal.identificacion}</strong></td>
-                    <td>${animal.especie}</td>
-                    <td>${animal.raza || '-'}</td>
-                    <td>${animal.genero}</td>
-                    <td>${animal.peso ? animal.peso + ' kg' : '-'}</td>
-                    <td>
-                        <span class="badge badge-${animal.estado.toLowerCase().replace(' ', '-')}">
-                            ${animal.estado}
-                        </span>
-                    </td>
-                    <td>${formatearFecha(animal.fechaRegistro)}</td>
-                    <td>
-                        <div class="actions-cell">
-                            <button class="btn btn-secondary btn-small" onclick="editarAnimal('${animal._id}')">
-                                ✏️ Editar
-                            </button>
-                            <button class="btn btn-danger btn-small" onclick="eliminarAnimal('${animal._id}')">
-                                🗑️
-                            </button>
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🐄</div>
+                            <p>No hay animales registrados</p>
+                            <p style="font-size: 13px; margin-top: 8px;">Haz clic en "Registrar Animal" para comenzar</p>
                         </div>
                     </td>
                 </tr>
-            `).join('');
+            `;
+            return;
         }
 
-        // Filtrar tabla
-        function filtrarTabla() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const filtrados = ganadoData.filter(animal => 
-                animal.identificacion.toLowerCase().includes(searchTerm) ||
-                animal.especie.toLowerCase().includes(searchTerm) ||
-                (animal.raza && animal.raza.toLowerCase().includes(searchTerm))
-            );
-            renderizarTabla(filtrados);
+        tbody.innerHTML = data.map(animal => `
+            <tr>
+                <td><strong>${animal.identificacion}</strong></td>
+                <td>${animal.especie}</td>
+                <td>${animal.raza || '-'}</td>
+                <td>${animal.genero}</td>
+                <td>${animal.peso ? animal.peso + ' kg' : '-'}</td>
+                <td>
+                    <span class="badge badge-${animal.estado.toLowerCase().replace(' ', '-')}">
+                        ${animal.estado}
+                    </span>
+                </td>
+                <td>${formatearFecha(animal.fechaRegistro)}</td>
+                <td>
+                    <div class="actions-cell">
+                        ${permisosUsuario.editar_propios ? `
+                            <button class="btn btn-secondary btn-small btn-editar" onclick="editarAnimal('${animal._id}')">
+                                ✏️ Editar
+                            </button>
+                        ` : ''}
+                        ${permisosUsuario.eliminar_propios ? `
+                            <button class="btn btn-danger btn-small" onclick="eliminarAnimal('${animal._id}')">
+                                🗑️
+                            </button>
+                        ` : ''}
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Filtrar tabla
+    function filtrarTabla() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filtrados = ganadoData.filter(animal => 
+            animal.identificacion.toLowerCase().includes(searchTerm) ||
+            animal.especie.toLowerCase().includes(searchTerm) ||
+            (animal.raza && animal.raza.toLowerCase().includes(searchTerm))
+        );
+        renderizarTabla(filtrados);
+    }
+
+    // Abrir modal nuevo
+    function abrirModalNuevo() {
+        if (!permisosUsuario.ganado) {
+            alert('No tienes permiso para registrar ganado');
+            return;
+        }
+        
+        document.getElementById('modalTitle').innerHTML = '🐄 Registrar Nuevo Animal';
+        document.getElementById('animalForm').reset();
+        document.getElementById('animalId').value = '';
+        document.getElementById('modalError').style.display = 'none';
+        document.getElementById('modalAnimal').classList.add('active');
+    }
+
+    // Editar animal
+    async function editarAnimal(id) {
+        if (!permisosUsuario.editar_propios) {
+            alert('No tienes permiso para editar registros');
+            return;
         }
 
-        // Abrir modal nuevo
-        function abrirModalNuevo() {
-            document.getElementById('modalTitle').innerHTML = '🐄 Registrar Nuevo Animal';
-            document.getElementById('animalForm').reset();
-            document.getElementById('animalId').value = '';
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_URL}/ganado/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) throw new Error('Error al cargar animal');
+
+            const animal = await response.json();
+            
+            document.getElementById('modalTitle').innerHTML = '✏️ Editar Animal';
+            document.getElementById('animalId').value = animal._id;
+            document.getElementById('identificacion').value = animal.identificacion;
+            document.getElementById('especie').value = animal.especie;
+            document.getElementById('genero').value = animal.genero;
+            document.getElementById('estado').value = animal.estado;
+            document.getElementById('raza').value = animal.raza || '';
+            document.getElementById('peso').value = animal.peso || '';
+            document.getElementById('color').value = animal.color || '';
+            document.getElementById('observaciones').value = animal.observaciones || '';
+            
+            if (animal.fechaNacimiento) {
+                document.getElementById('fechaNacimiento').value = animal.fechaNacimiento.split('T')[0];
+            }
+
             document.getElementById('modalError').style.display = 'none';
             document.getElementById('modalAnimal').classList.add('active');
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error al cargar el animal');
+        }
+    }
+
+    // Guardar animal
+    async function guardarAnimal(e) {
+        e.preventDefault();
+
+        const animalId = document.getElementById('animalId').value;
+        
+        if (!animalId && !permisosUsuario.ganado) {
+            alert('No tienes permiso para crear ganado');
+            return;
         }
 
-        // Editar animal
-        async function editarAnimal(id) {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_URL}/ganado/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) throw new Error('Error al cargar animal');
-
-                const animal = await response.json();
-                
-                document.getElementById('modalTitle').innerHTML = '✏️ Editar Animal';
-                document.getElementById('animalId').value = animal._id;
-                document.getElementById('identificacion').value = animal.identificacion;
-                document.getElementById('especie').value = animal.especie;
-                document.getElementById('genero').value = animal.genero;
-                document.getElementById('estado').value = animal.estado;
-                document.getElementById('raza').value = animal.raza || '';
-                document.getElementById('peso').value = animal.peso || '';
-                document.getElementById('color').value = animal.color || '';
-                document.getElementById('observaciones').value = animal.observaciones || '';
-                
-                if (animal.fechaNacimiento) {
-                    document.getElementById('fechaNacimiento').value = animal.fechaNacimiento.split('T')[0];
-                }
-
-                document.getElementById('modalError').style.display = 'none';
-                document.getElementById('modalAnimal').classList.add('active');
-            } catch (error) {
-                console.error('Error:', error);
-                mostrarError('Error al cargar el animal');
-            }
+        if (animalId && !permisosUsuario.editar_propios) {
+            alert('No tienes permiso para editar registros');
+            return;
         }
 
-        // Guardar animal
-        async function guardarAnimal(e) {
-            e.preventDefault();
+        const data = {
+            identificacion: document.getElementById('identificacion').value,
+            especie: document.getElementById('especie').value,
+            genero: document.getElementById('genero').value,
+            estado: document.getElementById('estado').value,
+            raza: document.getElementById('raza').value,
+            peso: document.getElementById('peso').value ? parseFloat(document.getElementById('peso').value) : undefined,
+            color: document.getElementById('color').value,
+            observaciones: document.getElementById('observaciones').value,
+            fechaNacimiento: document.getElementById('fechaNacimiento').value || undefined,
+            empresa: empresaId
+        };
 
-            const animalId = document.getElementById('animalId').value;
-            const data = {
-                identificacion: document.getElementById('identificacion').value,
-                especie: document.getElementById('especie').value,
-                genero: document.getElementById('genero').value,
-                estado: document.getElementById('estado').value,
-                raza: document.getElementById('raza').value,
-                peso: document.getElementById('peso').value ? parseFloat(document.getElementById('peso').value) : undefined,
-                color: document.getElementById('color').value,
-                observaciones: document.getElementById('observaciones').value,
-                fechaNacimiento: document.getElementById('fechaNacimiento').value || undefined,
-                empresa: empresaId
-            };
-
-            try {
-                const token = localStorage.getItem('token');
-                const url = animalId 
-                    ? `${API_URL}/ganado/${animalId}`
-                    : `${API_URL}/ganado`;
-                
-                const method = animalId ? 'PUT' : 'POST';
-
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Error al guardar');
-                }
-
-                cerrarModal();
-                await cargarGanado();
-                await cargarEstadisticas();
-                mostrarExito(animalId ? 'Animal actualizado exitosamente' : 'Animal registrado exitosamente');
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('modalError').textContent = error.message;
-                document.getElementById('modalError').style.display = 'block';
-            }
-        }
-
-        // Eliminar animal
-        async function eliminarAnimal(id) {
-            if (!confirm('¿Estás seguro de que deseas eliminar este animal?')) {
-                return;
-            }
-
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_URL}/ganado/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) throw new Error('Error al eliminar');
-
-                await cargarGanado();
-                await cargarEstadisticas();
-                mostrarExito('Animal eliminado exitosamente');
-            } catch (error) {
-                console.error('Error:', error);
-                mostrarError('Error al eliminar el animal');
-            }
-        }
-
-        // Cerrar modal
-        function cerrarModal() {
-            document.getElementById('modalAnimal').classList.remove('active');
-        }
-
-        // Mostrar toast de éxito
-        function mostrarExito(mensaje) {
-            const toast = document.getElementById('successToast');
-            toast.textContent = mensaje;
-            toast.style.display = 'block';
+        try {
+            const token = localStorage.getItem('token');
+            const url = animalId 
+                ? `${API_URL}/ganado/${animalId}`
+                : `${API_URL}/ganado`;
             
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
-        }
+            const method = animalId ? 'PUT' : 'POST';
 
-        // Mostrar error
-        function mostrarError(mensaje) {
-            alert(mensaje);
-        }
-
-        // Formatear fecha
-        function formatearFecha(fecha) {
-            const date = new Date(fecha);
-            return date.toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
             });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Error al guardar');
+            }
+
+            cerrarModal();
+            await cargarGanado();
+            await cargarEstadisticas();
+            mostrarExito(animalId ? 'Animal actualizado exitosamente' : 'Animal registrado exitosamente');
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('modalError').textContent = error.message;
+            document.getElementById('modalError').style.display = 'block';
         }
-    </script>
+    }
+
+    // Eliminar animal
+    async function eliminarAnimal(id) {
+        if (!permisosUsuario.eliminar_propios) {
+            alert('No tienes permiso para eliminar registros');
+            return;
+        }
+
+        if (!confirm('¿Estás seguro de que deseas eliminar este animal?')) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_URL}/ganado/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) throw new Error('Error al eliminar');
+
+            await cargarGanado();
+            await cargarEstadisticas();
+            mostrarExito('Animal eliminado exitosamente');
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error al eliminar el animal');
+        }
+    }
+
+    // Cerrar modal
+    function cerrarModal() {
+        document.getElementById('modalAnimal').classList.remove('active');
+    }
+
+    // Mostrar toast de éxito
+    function mostrarExito(mensaje) {
+        const toast = document.getElementById('successToast');
+        toast.textContent = mensaje;
+        toast.style.display = 'block';
+        
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    // Mostrar error
+    function mostrarError(mensaje) {
+        alert(mensaje);
+    }
+
+    // Formatear fecha
+    function formatearFecha(fecha) {
+        const date = new Date(fecha);
+        return date.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+</script>
 </body>
 </html>

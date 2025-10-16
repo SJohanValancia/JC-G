@@ -3,15 +3,18 @@ const router = express.Router();
 const Ganado = require('../models/Ganado');
 const auth = require('../middleware/auth');
 const { verificarPermiso } = require('../middleware/permisos');
+const { filtroVisibilidad } = require('../middleware/filtros');
 
-// Obtener todo el ganado de una empresa
+// Obtener todo el ganado de la empresa (pero respetando visibilidad)
 router.get('/empresa/:empresaId', auth, verificarPermiso('ganado'), async (req, res) => {
   try {
-    const ganado = await Ganado.find({ 
-      empresa: req.params.empresaId 
-    })
-    .populate('usuarioRegistro', 'nombreUsuario')
-    .sort({ fechaRegistro: -1 });
+    const baseFilter = { empresa: req.params.empresaId };
+    const visFilter  = filtroVisibilidad(req);
+
+    // Mezclamos ambos filtros
+    const ganado = await Ganado.find({ ...baseFilter, ...visFilter })
+                               .populate('usuarioRegistro', 'nombreUsuario')
+                               .sort({ fechaRegistro: -1 });
 
     res.json(ganado);
   } catch (error) {
@@ -19,7 +22,6 @@ router.get('/empresa/:empresaId', auth, verificarPermiso('ganado'), async (req, 
     res.status(500).json({ error: 'Error al obtener el ganado' });
   }
 });
-
 // Obtener un animal específico
 router.get('/:id', auth, verificarPermiso('ganado'), async (req, res) => {
   try {
