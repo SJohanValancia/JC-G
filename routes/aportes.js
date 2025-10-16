@@ -1,3 +1,6 @@
+
+const mongoose = require('mongoose');
+
 const express = require('express');
 const router = express.Router();
 const Aporte = require('../models/Aporte');
@@ -51,12 +54,13 @@ router.post('/', verificarPermiso('aportes'), async (req, res) => {
       });
     }
 
-    const aporte = await Aporte.create({
-      monto,
-      descripcion,
-      empresa,
-      usuario: req.usuario._id
-    });
+const aporte = await Aporte.create({
+  monto,
+  descripcion,
+  empresa,
+  usuario: req.usuario._id,
+  tipo: req.body.tipo || 'ingreso'  // AGREGAR ESTA LÍNEA
+});
 
     await aporte.populate('usuario', 'nombreUsuario');
 
@@ -164,8 +168,8 @@ router.get('/estadisticas/:empresaId', verificarPermiso('reportes'), async (req,
       return res.status(403).json({ error: 'No autorizado' });
     }
 
-    const baseFilter = { empresa: empresaId };
-    const visFilter = filtroVisibilidad(req, 'usuario');
+const baseFilter = { empresa: mongoose.Types.ObjectId(empresaId) };
+const visFilter = filtroVisibilidad(req, 'usuario');
 
     // Total de ingresos (aportes)
     const ingresos = await Aporte.aggregate([
@@ -204,13 +208,14 @@ router.get('/estadisticas/:empresaId', verificarPermiso('reportes'), async (req,
     ]);
 
     // Total de gastos (importar modelo Gasto)
-    const Gasto = require('../models/Gasto');
-    const gastos = await Gasto.aggregate([
-      { 
-        $match: { 
-          empresa: req.usuario.empresa
-        } 
-      },
+const Gasto = require('../models/Gasto');
+const gastos = await Gasto.aggregate([
+  { 
+    $match: { 
+      empresa: mongoose.Types.ObjectId(empresaId),
+      ...visFilter
+    } 
+  },,
       {
         $group: {
           _id: null,
