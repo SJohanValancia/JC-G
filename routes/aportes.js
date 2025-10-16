@@ -16,8 +16,7 @@ router.get('/empresa/:empresaId', verificarPermiso('aportes'), async (req, res) 
       return res.status(403).json({ error: 'No autorizado' });
 
     const baseFilter = { empresa: req.params.empresaId };
-    const visFilter = filtroVisibilidad(req); // ← puede ser {} o {usuario: id}
-
+const visFilter = filtroVisibilidad(req, 'usuario');
     const aportes = await Aporte.find({ ...baseFilter, ...visFilter })
                                 .populate('usuario', 'nombreUsuario')
                                 .sort({ fecha: -1 });
