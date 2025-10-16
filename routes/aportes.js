@@ -155,4 +155,96 @@ router.delete('/:id', verificarPermiso('eliminar_propios'), async (req, res) => 
   }
 });
 
+// Obtener estadísticas de aportes (ingresos, egresos, gastos)
+router.get('/estadisticas/:empresaId', verificarPermiso('reportes'), async (req, res) => {
+  try {
+    const { empresaId } = req.params;
+
+    if (req.usuario.empresa.toString() !== empresaId) {
+      return res.status(403).json({ error: 'No autorizado' });
+    }
+
+    const baseFilter = { empresa: empresaId };
+    const visFilter = filtroVisibilidad(req, 'usuario');
+
+    // Total de ingresos (aportes)
+    const ingresos = await Aporte.aggregate([
+      { 
+        $match: { 
+          ...baseFilter, 
+          ...visFilter,
+          tipo: 'ingreso' 
+        } 
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$monto' },
+          cantidad: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Total de egresos (retiros)
+    const egresos = await Aporte.aggregate([
+      { 
+        $match: { 
+          ...baseFilter, 
+          ...visFilter,
+          tipo: 'egreso' 
+        } 
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$monto' },
+          cantidad: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Total de gastos (importar modelo Gasto)
+    const Gasto = require('../models/Gasto');
+    const gastos = await Gasto.aggregate([
+      { 
+        $match: { 
+          empresa: req.usuario.empresa
+        } 
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$monto' },
+          cantidad: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const totalIngresos = ingresos[0]?.total || 0;
+    const totalEgresos = egresos[0]?.total || 0;
+    const totalGastos = gastos[0]?.total || 0;
+    const cajaActual = totalIngresos - totalEgresos - totalGastos;
+
+    res.json({
+      ingresos: {
+        total: totalIngresos,
+        cantidad: ingresos[0]?.cantidad || 0
+      },
+      egresos: {
+        total: totalEgresos,
+        cantidad: egresos[0]?.cantidad || 0
+      },
+      gastos: {
+        total: totalGastos,
+        cantidad: gastos[0]?.cantidad || 0
+      },
+      cajaActual: cajaActual
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener estadísticas' });
+  }
+});
+
 module.exports = router;

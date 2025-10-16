@@ -539,7 +539,7 @@
                     <span class="user-icon">👤</span>
                     <div>
                         <p class="user-name" id="userName"></p>
-                        <p class="user-role" id="userRole">Empleado</p>
+                        <p class="user-role" id="userRole">Socio</p>
                     </div>
                 </div>
                 <button class="btn-logout" id="btnLogout">
@@ -550,54 +550,83 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <header class="header">
-                <div class="welcome-section">
-                    <div class="greeting">
-                        <span class="time-emoji" id="timeEmoji">🌅</span>
-                        <span id="greetingText">¡Buenos días!</span>
-                    </div>
-                    <div class="user-info">
-                        <strong id="userName">Usuario</strong>
-                    </div>
-                    <div class="empresa-badge">
-                        🏢 <span id="empresaName">Empresa</span>
-                    </div>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-primary" id="btnNuevoAporte">
-                        💰 Nuevo Aporte
-                    </button>
-                    <button class="btn btn-secondary" id="btnCerrarSesion">
-                        🚪 Salir
-                    </button>
-                </div>
-            </header>
+          <header class="header">
+    <div class="welcome-section">
+        <div class="greeting">
+            <span class="time-emoji" id="timeEmoji">🌅</span>
+            <span id="greetingText">¡Buenos días!</span>
+        </div>
+        <div class="user-info">
+            <strong id="userNameHeader">Usuario</strong>
+        </div>
+        <div class="empresa-badge">
+            🏢 <span id="empresaName">Empresa</span>
+        </div>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-primary" id="btnNuevoAporte">
+            💰 Nuevo Aporte
+        </button>
+        <button class="btn btn-danger" id="btnRetiro" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);">
+            💸 Retirar
+        </button>
+        <button class="btn btn-secondary" id="btnCerrarSesion">
+            🚪 Salir
+        </button>
+    </div>
+</header>
 
-            <div class="content-grid">
-                <div class="card">
-                    <h2 class="card-title">
-                        📊 Resumen Financiero
-                    </h2>
-                    <div style="padding: 20px; text-align: center;">
-                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">Total Aportes</div>
-                        <div style="font-size: 48px; font-weight: 700; color: #2d5016;" id="totalAportes">$0</div>
-                        <div style="font-size: 14px; color: #999; margin-top: 8px;" id="cantidadAportes">0 aportes registrados</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2 class="card-title">
-                        💵 Aportes Recientes
-                    </h2>
-                    <div class="aportes-list" id="aportesList">
-                        <div class="empty-state">
-                            <div class="empty-state-icon">🐄</div>
-                            <p>No hay aportes registrados aún</p>
-                            <p style="font-size: 13px; margin-top: 8px;">Haz clic en "Nuevo Aporte" para comenzar</p>
-                        </div>
-                    </div>
-                </div>
+<div class="content-grid">
+    <!-- Card de Resumen Financiero -->
+    <div class="card">
+        <h2 class="card-title">
+            📊 Resumen Financiero
+        </h2>
+        <div style="padding: 20px;">
+            <!-- Total Aportes -->
+            <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #f0f0f0;">
+                <div style="font-size: 14px; color: #666; margin-bottom: 8px;">💰 Total Aportes</div>
+                <div style="font-size: 42px; font-weight: 700; color: #2d5016;" id="totalAportes">$0</div>
+                <div style="font-size: 14px; color: #999; margin-top: 8px;" id="cantidadAportes">0 aportes</div>
             </div>
+
+            <!-- Total Retiros -->
+            <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #f0f0f0;">
+                <div style="font-size: 14px; color: #666; margin-bottom: 8px;">📤 Total Retiros</div>
+                <div style="font-size: 36px; font-weight: 700; color: #dc2626;" id="totalRetiros">$0</div>
+                <div style="font-size: 14px; color: #999; margin-top: 8px;" id="cantidadRetiros">0 retiros</div>
+            </div>
+
+            <!-- Total Gastos -->
+            <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #f0f0f0;">
+                <div style="font-size: 14px; color: #666; margin-bottom: 8px;">💸 Total Gastos</div>
+                <div style="font-size: 36px; font-weight: 700; color: #f59e0b;" id="totalGastos">$0</div>
+                <div style="font-size: 14px; color: #999; margin-top: 8px;" id="cantidadGastos">0 gastos</div>
+            </div>
+
+            <!-- Caja Actual -->
+            <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 16px;">
+                <div style="font-size: 16px; color: #166534; margin-bottom: 8px; font-weight: 600;">🏦 Caja Actual</div>
+                <div style="font-size: 48px; font-weight: 800; color: #15803d;" id="cajaActual">$0</div>
+                <div style="font-size: 12px; color: #16a34a; margin-top: 8px;">Aportes - Retiros - Gastos</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card de Movimientos Recientes -->
+    <div class="card">
+        <h2 class="card-title">
+            📋 Movimientos Recientes
+        </h2>
+        <div class="aportes-list" id="aportesList">
+            <div class="empty-state">
+                <div class="empty-state-icon">🐄</div>
+                <p>No hay movimientos registrados aún</p>
+                <p style="font-size: 13px; margin-top: 8px;">Registra aportes, retiros o gastos</p>
+            </div>
+        </div>
+    </div>
+</div>
         </main>
     </div>
 
@@ -648,6 +677,53 @@
         </div>
     </div>
 
+    <!-- Modal Retiro -->
+<div class="modal-overlay" id="modalRetiro">
+    <div class="modal">
+        <button class="close-modal" id="closeModalRetiro">×</button>
+        <div class="modal-header">
+            <h3 class="modal-title">💸 Registrar Retiro de Dinero</h3>
+            <p class="modal-subtitle">Este retiro disminuirá el total de caja</p>
+        </div>
+
+        <div class="error-message" id="modalErrorRetiro"></div>
+
+        <form id="retiroForm">
+            <div class="form-group">
+                <label class="form-label" for="montoRetiro">Monto ($)</label>
+                <input 
+                    type="number" 
+                    class="form-input" 
+                    id="montoRetiro" 
+                    placeholder="Ej: 500000"
+                    step="0.01"
+                    min="0"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="descripcionRetiro">Descripción</label>
+                <textarea 
+                    class="form-input" 
+                    id="descripcionRetiro" 
+                    placeholder="¿Para qué es este retiro?"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancelarRetiro">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary" id="guardarRetiro" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);">
+                    <span class="btn-text">Registrar Retiro</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
     <div class="success-toast" id="successToast">
         ✓ Aporte registrado exitosamente
     </div>
@@ -688,48 +764,41 @@
         }
     }
 
-    // Agregar después de la función cargarPermisos()
-function mostrarMenuAdmin() {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    const adminLink = document.getElementById('adminLink');
-    
-    if (usuario && usuario.rol === 'administrador') {
-        adminLink.style.display = 'flex';
-    } else {
-        adminLink.style.display = 'none';
+    function mostrarMenuAdmin() {
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        const adminLink = document.getElementById('adminLink');
+        
+        if (usuario && usuario.rol === 'administrador') {
+            adminLink.style.display = 'flex';
+        } else {
+            adminLink.style.display = 'none';
+        }
     }
-}
-
 
     // Actualizar UI según permisos
     function actualizarUISegunPermisos() {
-        // Ocultar botón de nuevo aporte si no tiene permiso
         if (!permisosUsuario.aportes) {
             const btnNuevo = document.getElementById('btnNuevoAporte');
-            if (btnNuevo) {
-                btnNuevo.style.display = 'none';
-            }
+            const btnRetiro = document.getElementById('btnRetiro');
+            if (btnNuevo) btnNuevo.style.display = 'none';
+            if (btnRetiro) btnRetiro.style.display = 'none';
         }
 
-        // Si no puede ver reportes, ocultar la sección de resumen
         if (!permisosUsuario.reportes) {
             const resumenCard = document.querySelector('.card');
-            if (resumenCard) {
-                resumenCard.style.display = 'none';
-            }
+            if (resumenCard) resumenCard.style.display = 'none';
         }
     }
 
     // Inicialización
-document.addEventListener('DOMContentLoaded', async () => {
-    if (!verificarAutenticacion()) return;
-    
-    await cargarPermisos();
-    mostrarMenuAdmin(); // <-- AGREGAR ESTA LÍNEA
-    
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (!verificarAutenticacion()) return;
+        
+        await cargarPermisos();
+        mostrarMenuAdmin();
+        
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-        // Configurar saludo según hora
         function setGreeting() {
             const hour = new Date().getHours();
             const greetingText = document.getElementById('greetingText');
@@ -747,13 +816,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // Configurar datos del usuario
         document.getElementById('userName').textContent = usuario.nombreUsuario;
+        document.getElementById('userNameHeader').textContent = usuario.nombreUsuario;
         document.getElementById('empresaName').textContent = usuario.empresa.nombre;
+        document.getElementById('empresaNombre').textContent = usuario.empresa.nombre;
         setGreeting();
 
-        // Modal
-        const modal = document.getElementById('modalAporte');
+        // Modal Aporte
+        const modalAporte = document.getElementById('modalAporte');
         const btnNuevoAporte = document.getElementById('btnNuevoAporte');
         const closeModal = document.getElementById('closeModal');
         const cancelarAporte = document.getElementById('cancelarAporte');
@@ -764,20 +834,48 @@ document.addEventListener('DOMContentLoaded', async () => {
                 alert('No tienes permiso para crear aportes');
                 return;
             }
-            modal.classList.add('active');
+            modalAporte.classList.add('active');
             aporteForm.reset();
             document.getElementById('modalError').style.display = 'none';
         });
 
-        closeModal.addEventListener('click', () => modal.classList.remove('active'));
-        cancelarAporte.addEventListener('click', () => modal.classList.remove('active'));
+        closeModal.addEventListener('click', () => modalAporte.classList.remove('active'));
+        cancelarAporte.addEventListener('click', () => modalAporte.classList.remove('active'));
+        modalAporte.addEventListener('click', (e) => {
+            if (e.target === modalAporte) modalAporte.classList.remove('active');
+        });
 
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.remove('active');
+        // Modal Retiro
+        const modalRetiro = document.getElementById('modalRetiro');
+        const btnRetiro = document.getElementById('btnRetiro');
+        const closeModalRetiro = document.getElementById('closeModalRetiro');
+        const cancelarRetiro = document.getElementById('cancelarRetiro');
+        const retiroForm = document.getElementById('retiroForm');
+
+        btnRetiro.addEventListener('click', () => {
+            if (!permisosUsuario.aportes) {
+                alert('No tienes permiso para realizar retiros');
+                return;
+            }
+            modalRetiro.classList.add('active');
+            retiroForm.reset();
+            document.getElementById('modalErrorRetiro').style.display = 'none';
+        });
+
+        closeModalRetiro.addEventListener('click', () => modalRetiro.classList.remove('active'));
+        cancelarRetiro.addEventListener('click', () => modalRetiro.classList.remove('active'));
+        modalRetiro.addEventListener('click', (e) => {
+            if (e.target === modalRetiro) modalRetiro.classList.remove('active');
         });
 
         // Cerrar sesión
         document.getElementById('btnCerrarSesion').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            window.location.href = '/index.html';
+        });
+
+        document.getElementById('btnLogout').addEventListener('click', () => {
             localStorage.removeItem('token');
             localStorage.removeItem('usuario');
             window.location.href = '/index.html';
@@ -796,7 +894,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const descripcion = document.getElementById('descripcion').value.trim();
 
             if (monto <= 0) {
-                showError('El monto debe ser mayor a 0');
+                showError('El monto debe ser mayor a 0', 'modalError');
                 return;
             }
 
@@ -817,7 +915,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         monto,
                         descripcion,
                         empresa: usuario.empresa.id,
-                        usuario: usuario.id
+                        usuario: usuario.id,
+                        tipo: 'ingreso'
                     })
                 });
 
@@ -828,20 +927,112 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
 
                 showSuccess('¡Aporte registrado exitosamente!');
-                modal.classList.remove('active');
+                modalAporte.classList.remove('active');
                 aporteForm.reset();
-                loadAportes();
+                loadEstadisticas();
+                loadMovimientos();
 
             } catch (error) {
-                showError(error.message);
+                showError(error.message, 'modalError');
             } finally {
                 btn.disabled = false;
                 btnText.textContent = 'Guardar Aporte';
             }
         });
 
-        // Cargar aportes
-        async function loadAportes() {
+        // Guardar retiro
+        retiroForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!permisosUsuario.aportes) {
+                alert('No tienes permiso para realizar retiros');
+                return;
+            }
+
+            const monto = parseFloat(document.getElementById('montoRetiro').value);
+            const descripcion = document.getElementById('descripcionRetiro').value.trim();
+
+            if (monto <= 0) {
+                showError('El monto debe ser mayor a 0', 'modalErrorRetiro');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            const btn = document.getElementById('guardarRetiro');
+            const btnText = btn.querySelector('.btn-text');
+            btn.disabled = true;
+            btnText.innerHTML = '<span class="loading-spinner"></span> Guardando...';
+
+            try {
+                const response = await fetch(`${API_URL}/aportes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        monto,
+                        descripcion,
+                        empresa: usuario.empresa.id,
+                        usuario: usuario.id,
+                        tipo: 'egreso'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Error al guardar el retiro');
+                }
+
+                showSuccess('¡Retiro registrado exitosamente!');
+                modalRetiro.classList.remove('active');
+                retiroForm.reset();
+                loadEstadisticas();
+                loadMovimientos();
+
+            } catch (error) {
+                showError(error.message, 'modalErrorRetiro');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Registrar Retiro';
+            }
+        });
+
+        // Cargar estadísticas
+        async function loadEstadisticas() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_URL}/aportes/estadisticas/${usuario.empresa.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar estadísticas');
+                }
+
+                const stats = await response.json();
+
+                document.getElementById('totalAportes').textContent = formatMoney(stats.ingresos.total);
+                document.getElementById('cantidadAportes').textContent = `${stats.ingresos.cantidad} ${stats.ingresos.cantidad === 1 ? 'aporte' : 'aportes'}`;
+
+                document.getElementById('totalRetiros').textContent = formatMoney(stats.egresos.total);
+                document.getElementById('cantidadRetiros').textContent = `${stats.egresos.cantidad} ${stats.egresos.cantidad === 1 ? 'retiro' : 'retiros'}`;
+
+                document.getElementById('totalGastos').textContent = formatMoney(stats.gastos.total);
+                document.getElementById('cantidadGastos').textContent = `${stats.gastos.cantidad} ${stats.gastos.cantidad === 1 ? 'gasto' : 'gastos'}`;
+
+                document.getElementById('cajaActual').textContent = formatMoney(stats.cajaActual);
+
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+            }
+        }
+
+        // Cargar movimientos (aportes y retiros)
+        async function loadMovimientos() {
             try {
                 const token = localStorage.getItem('token');
                 const response = await fetch(`${API_URL}/aportes/empresa/${usuario.empresa.id}`, {
@@ -851,43 +1042,46 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Error al cargar aportes');
+                    throw new Error('Error al cargar movimientos');
                 }
 
-                const aportes = await response.json();
+                const movimientos = await response.json();
 
-                if (aportes.length === 0) {
+                if (movimientos.length === 0) {
                     document.getElementById('aportesList').innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">🐄</div>
-                            <p>No hay aportes registrados aún</p>
-                            <p style="font-size: 13px; margin-top: 8px;">Haz clic en "Nuevo Aporte" para comenzar</p>
+                            <p>No hay movimientos registrados aún</p>
+                            <p style="font-size: 13px; margin-top: 8px;">Registra aportes, retiros o gastos</p>
                         </div>
                     `;
-                    document.getElementById('totalAportes').textContent = '$0';
-                    document.getElementById('cantidadAportes').textContent = '0 aportes registrados';
                     return;
                 }
 
-                const total = aportes.reduce((sum, a) => sum + a.monto, 0);
-                document.getElementById('totalAportes').textContent = formatMoney(total);
-                document.getElementById('cantidadAportes').textContent = `${aportes.length} ${aportes.length === 1 ? 'aporte registrado' : 'aportes registrados'}`;
+                const html = movimientos.map(mov => {
+                    const isIngreso = mov.tipo === 'ingreso';
+                    const icon = isIngreso ? '💰' : '💸';
+                    const color = isIngreso ? '#2d5016' : '#dc2626';
+                    const borderColor = isIngreso ? '#2d5016' : '#dc2626';
+                    const tipo = isIngreso ? 'Aporte' : 'Retiro';
 
-                const html = aportes.map(aporte => `
-                    <div class="aporte-item">
-                        <div class="aporte-header">
-                            <span class="aporte-monto">${formatMoney(aporte.monto)}</span>
-                            <span class="aporte-usuario">👤 ${aporte.usuario.nombreUsuario}</span>
+                    return `
+                        <div class="aporte-item" style="border-left-color: ${borderColor};">
+                            <div class="aporte-header">
+                                <span class="aporte-monto" style="color: ${color};">${icon} ${formatMoney(mov.monto)}</span>
+                                <span class="aporte-usuario">👤 ${mov.usuario.nombreUsuario}</span>
+                            </div>
+                            <div style="font-size: 12px; font-weight: 600; color: ${color}; margin-bottom: 5px;">${tipo}</div>
+                            <div class="aporte-descripcion">${mov.descripcion}</div>
+                            <div class="aporte-fecha">📅 ${formatDate(mov.fecha)}</div>
                         </div>
-                        <div class="aporte-descripcion">${aporte.descripcion}</div>
-                        <div class="aporte-fecha">📅 ${formatDate(aporte.fecha)}</div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
 
                 document.getElementById('aportesList').innerHTML = html;
 
             } catch (error) {
-                console.error('Error al cargar aportes:', error);
+                console.error('Error al cargar movimientos:', error);
             }
         }
 
@@ -910,8 +1104,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             }).format(date);
         }
 
-        function showError(message) {
-            const errorDiv = document.getElementById('modalError');
+        function showError(message, elementId) {
+            const errorDiv = document.getElementById(elementId);
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
         }
@@ -925,11 +1119,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             }, 3000);
         }
 
-        // Cargar aportes al iniciar
-        loadAportes();
+        // Cargar datos al iniciar
+        loadEstadisticas();
+        loadMovimientos();
 
         // Actualizar cada 30 segundos
-        setInterval(loadAportes, 30000);
+        setInterval(() => {
+            loadEstadisticas();
+            loadMovimientos();
+        }, 30000);
     });
 </script>
 <script>
