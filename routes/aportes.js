@@ -9,15 +9,16 @@ router.use(authMiddleware);
 
 const { filtroVisibilidad } = require('../middleware/filtros');
 
-// Listar aportes
+// routes/aportes.js
 router.get('/empresa/:empresaId', verificarPermiso('aportes'), async (req, res) => {
   try {
     if (req.usuario.empresa.toString() !== req.params.empresaId)
       return res.status(403).json({ error: 'No autorizado' });
 
-    const filter = { empresa: req.params.empresaId, ...filtroVisibilidad(req) };
+    const baseFilter = { empresa: req.params.empresaId };
+    const visFilter = filtroVisibilidad(req); // ← puede ser {} o {usuario: id}
 
-    const aportes = await Aporte.find(filter)
+    const aportes = await Aporte.find({ ...baseFilter, ...visFilter })
                                 .populate('usuario', 'nombreUsuario')
                                 .sort({ fecha: -1 });
 
