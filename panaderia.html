@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JC-G - Registro de Empresa</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .access-overlay {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .access-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: modalSlideIn 0.6s ease;
+        }
+
+        .access-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        .access-card h2 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2d5016;
+            margin-bottom: 12px;
+        }
+
+        .access-card p {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .access-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            letter-spacing: 4px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .access-input:focus {
+            outline: none;
+            border-color: #2d5016;
+            box-shadow: 0 0 0 4px rgba(45, 80, 22, 0.1);
+        }
+
+        .access-error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .btn-access {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(45, 80, 22, 0.3);
+        }
+
+        .btn-access:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 80, 22, 0.4);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #2d5016;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de acceso con contraseña -->
+    <div class="access-overlay" id="accessOverlay">
+        <div class="access-card">
+            <div class="access-icon">🔐</div>
+            <h2>Acceso Restringido</h2>
+            <p>Esta página está protegida. Ingresa el código de acceso para registrar una nueva empresa.</p>
+            
+            <div class="access-error" id="accessError">Código incorrecto</div>
+            
+            <form id="accessForm">
+                <input 
+                    type="password" 
+                    class="access-input" 
+                    id="accessCode" 
+                    placeholder="CÓDIGO"
+                    maxlength="20"
+                    required
+                    autocomplete="off"
+                >
+                <button type="submit" class="btn-access">Verificar Acceso</button>
+            </form>
+            
+            <a href="/index.html" class="back-link">← Volver al inicio</a>
+        </div>
+    </div>
+
+    <!-- Contenido del registro (oculto hasta verificar) -->
+    <div class="auth-container" id="registerContent" style="display: none;">
+        <div class="auth-background">
+            <div class="cow-silhouette">🐄</div>
+            <div class="fence-pattern"></div>
+        </div>
+        
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo">
+                    <span class="logo-icon">🐄</span>
+                    <h1>JC-G</h1>
+                </div>
+                <p class="subtitle">Registro de Nueva Empresa</p>
+            </div>
+
+            <!-- Formulario de Registro -->
+            <form id="registerForm" class="auth-form active">
+                <div class="form-group">
+                    <label for="nombreEmpresa">
+                        <span class="label-icon">🏢</span>
+                        Nombre de la Empresa
+                    </label>
+                    <input 
+                        type="text" 
+                        id="nombreEmpresa" 
+                        name="nombreEmpresa"
+                        placeholder="Ej: Hacienda El Roble"
+                        required
+                    >
+                    <small class="form-hint">💡 Si la empresa ya existe, te unirás automáticamente</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombreUsuario">
+                        <span class="label-icon">👤</span>
+                        Nombre de Usuario (Administrador)
+                    </label>
+                    <input 
+                        type="text" 
+                        id="nombreUsuario" 
+                        name="nombreUsuario"
+                        placeholder="juanperez"
+                        required
+                    >
+                    <small class="form-hint">Sin espacios ni caracteres especiales</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword">
+                        <span class="label-icon">🔒</span>
+                        Contraseña
+                    </label>
+                    <input 
+                        type="password" 
+                        id="registerPassword" 
+                        name="password"
+                        placeholder="••••••••"
+                        minlength="6"
+                        required
+                    >
+                    <small class="form-hint">Mínimo 6 caracteres</small>
+                </div>
+
+                <div id="registerError" class="error-message" style="display: none;"></div>
+
+                <button type="submit" class="btn-primary">
+                    <span class="btn-text">Crear Empresa</span>
+                    <span class="btn-loader" style="display: none;">⏳ Procesando...</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>
+                    ¿Ya tienes cuenta? 
+                    <a href="/index.html" class="footer-link">Inicia sesión</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="register.js"></script>
+</body>
+</html>

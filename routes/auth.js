@@ -160,4 +160,30 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// Verificar código de acceso para registro
+router.post('/verificar-acceso', async (req, res) => {
+  try {
+    const { codigo } = req.body;
+    
+    // Obtener clave de la variable de entorno
+    const claveCorrecta = process.env.CLAVE_REGISTRO
+    
+    if (codigo === claveCorrecta) {
+      return res.json({ 
+        valido: true, 
+        mensaje: 'Acceso concedido' 
+      });
+    } else {
+      return res.status(401).json({ 
+        valido: false, 
+        error: 'Código de acceso incorrecto' 
+      });
+    }
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al verificar código' });
+  }
+});
+
 module.exports = router;

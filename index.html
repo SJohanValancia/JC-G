@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JC-G</title>
+    <title>JC-G - Iniciar Sesión</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -22,12 +22,7 @@
                 <p class="subtitle">Sistema de Gestión Ganadera Profesional</p>
             </div>
 
-            <div class="auth-tabs">
-                <button class="tab-btn active" data-tab="login">Iniciar Sesión</button>
-                <button class="tab-btn" data-tab="register">Registrarse</button>
-            </div>
-
-            <!-- Formulario de Login -->
+            <!-- Solo Formulario de Login -->
             <form id="loginForm" class="auth-form active">
                 <div class="form-group">
                     <label for="loginUsuario">
@@ -65,74 +60,13 @@
                 </button>
             </form>
 
-            <!-- Formulario de Registro -->
-            <form id="registerForm" class="auth-form">
-                <div class="form-group">
-                    <label for="nombreEmpresa">
-                        <span class="label-icon">🏢</span>
-                        Nombre de la Empresa
-                    </label>
-                    <input 
-                        type="text" 
-                        id="nombreEmpresa" 
-                        name="nombreEmpresa"
-                        placeholder="Ej: Hacienda El Roble"
-                        required
-                    >
-                    <small class="form-hint">💡 Si la empresa ya existe, te unirás automáticamente</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="nombreUsuario">
-                        <span class="label-icon">👤</span>
-                        Nombre de Usuario
-                    </label>
-                    <input 
-                        type="text" 
-                        id="nombreUsuario" 
-                        name="nombreUsuario"
-                        placeholder="juanperez"
-                        required
-                    >
-                    <small class="form-hint">Sin espacios ni caracteres especiales</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="registerPassword">
-                        <span class="label-icon">🔒</span>
-                        Contraseña
-                    </label>
-                    <input 
-                        type="password" 
-                        id="registerPassword" 
-                        name="password"
-                        placeholder="••••••••"
-                        minlength="6"
-                        required
-                    >
-                    <small class="form-hint">Mínimo 6 caracteres</small>
-                </div>
-
-                <div id="registerError" class="error-message" style="display: none;"></div>
-
-                <button type="submit" class="btn-primary">
-                    <span class="btn-text">Crear Cuenta</span>
-                    <span class="btn-loader" style="display: none;">⏳ Procesando...</span>
-                </button>
-            </form>
-
             <div class="auth-footer">
                 <p>
-                    <span class="footer-text-login">¿No tienes cuenta? </span>
-                    <span class="footer-text-register" style="display: none;">¿Ya tienes cuenta? </span>
-                    <span class="footer-link" id="switchForm"></span>
                 </p>
             </div>
         </div>
-
-
     </div>
 
-    <script src="app.js"></script>
+    <script src="login.js"></script>
 </body>
 </html>

@@ -1015,3 +1015,369 @@ input:checked + .slider:before {
         width: 100%;
       }
     }
+    .nav-btn {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos para modal de registrar socio */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay .modal {
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.4s ease;
+    position: relative;
+}
+
+.modal-overlay .close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.modal-overlay .close-modal:hover {
+    background: #f0f0f0;
+    color: #333;
+    transform: rotate(90deg);
+}
+
+.modal-overlay .modal-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+}
+
+.modal-overlay .modal-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.modal-overlay .form-group {
+    margin-bottom: 20px;
+}
+
+.modal-overlay .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.modal-overlay .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay .form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(45, 80, 22, 0.1);
+}
+
+.modal-overlay .error-message {
+    background: #fee;
+    color: #c33;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: none;
+    font-size: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.modal-actions .btn {
+    flex: 1;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* ============================================
+   MODAL DE REGISTRAR SOCIO
+   ============================================ */
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 32, 39, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.active {
+    display: flex !important;
+}
+
+.modal-overlay .modal {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    border-radius: 24px;
+    padding: 0;
+    max-width: 550px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(45, 80, 22, 0.1);
+    animation: modalSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-overlay .modal-header {
+    padding: 32px 36px 24px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-overlay .modal-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+}
+
+.modal-overlay .modal-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 8px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.modal-overlay .modal-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.modal-overlay .close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    font-size: 28px;
+    color: white;
+    cursor: pointer;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.modal-overlay .close-modal:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg) scale(1.1);
+}
+
+.modal-overlay #socioForm {
+    padding: 32px 36px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-overlay .form-group {
+    margin-bottom: 24px;
+}
+
+.modal-overlay .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.modal-overlay .form-input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.modal-overlay .form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(45, 80, 22, 0.1);
+}
+
+.modal-overlay .form-input:read-only {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    color: #666;
+}
+
+.modal-overlay .error-message {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: none;
+    font-size: 14px;
+    border-left: 4px solid #dc2626;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #f3f4f6;
+}
+
+.modal-actions .btn {
+    flex: 1;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.modal-actions .btn-secondary {
+    background: white;
+    color: #4b5563;
+    border: 2px solid #e5e7eb;
+}
+
+.modal-actions .btn-secondary:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    transform: translateY(-2px);
+}
+
+.modal-actions .btn-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(45, 80, 22, 0.3);
+}
+
+.modal-actions .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(45, 80, 22, 0.4);
+}
+
+.modal-actions .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsive para modal de socio */
+@media (max-width: 768px) {
+    .modal-overlay .modal {
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .modal-overlay .modal-header {
+        padding: 24px 20px 20px;
+    }
+    
+    .modal-overlay .modal-title {
+        font-size: 22px;
+    }
+    
+    .modal-overlay #socioForm {
+        padding: 24px 20px;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .modal-actions .btn {
+        width: 100%;
+    }
+}

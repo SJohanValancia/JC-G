@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Ganado - JC-G</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
     <style>
         * {
             margin: 0;
@@ -16,68 +18,18 @@
             background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             min-height: 100vh;
             color: #333;
-        }
-
-        /* Menú de Navegación */
-        .navbar {
-            background: rgba(26, 71, 42, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .navbar-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar-brand {
-            color: white;
-            font-size: 22px;
-            font-weight: 700;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .navbar-menu {
-            display: flex;
-            gap: 5px;
-            list-style: none;
-        }
-
-        .navbar-link {
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .navbar-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .navbar-link.active {
-            background: rgba(255, 255, 255, 0.2);
+            overflow-x: hidden;
         }
 
         .dashboard-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 30px 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
         }
 
         .page-header {
@@ -324,7 +276,7 @@
             color: #991b1b;
         }
 
-        .badge-tratamiento {
+        .badge-tratamiento, .badge-en-tratamiento {
             background: #fef3c7;
             color: #92400e;
         }
@@ -502,11 +454,6 @@
         }
 
         @media (max-width: 768px) {
-            .navbar-menu {
-                flex-direction: column;
-                gap: 5px;
-            }
-
             .form-row {
                 grid-template-columns: 1fr;
             }
@@ -527,101 +474,138 @@
     </style>
 </head>
 <body>
-    <!-- Menú de Navegación -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="/" class="navbar-brand">
-                🐄 JC-G
-            </a>
-            <ul class="navbar-menu">
-                <li><a href="/dashboard.html" class="navbar-link">📊 aportes</a></li>
-                <li><a href="/ganado.html" class="navbar-link active">🐮 Gestión de Ganado</a></li>
-            </ul>
-        </div>
-    </nav>
+
+    <button class="btn-drawer" id="btnDrawer">☰</button>
 
     <div class="dashboard-container">
-        <!-- Header -->
-        <div class="page-header">
-            <h1 class="page-title">
-                🐮 Gestión de Ganado
-            </h1>
-            <p class="page-subtitle">
-                <strong id="empresaName">Empresa</strong> - Administra tu inventario de ganado
-            </p>
-            <div class="header-actions">
-                <button class="btn btn-primary" id="btnNuevoAnimal">
-                    ➕ Registrar Animal
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🐄</span>
+                    <h2>JC-G</h2>
+                </div>
+                <p class="empresa-nombre" id="empresaNombre"></p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Aportes</span>
+                </a>
+                <a href="/ganado.html" class="nav-item active">
+                    <span class="nav-icon">🐄</span>
+                    <span>Ganado</span>
+                </a>
+              
+                <a href="/gastos.html" class="nav-item">
+                    <span class="nav-icon">💸</span>
+                    <span>Gastos</span>
+                </a>
+                <a href="/administrador.html" class="nav-item" id="adminLink" style="display: none;">
+                    <span class="nav-icon">👥</span>
+                    <span>Administración</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <span class="user-icon">👤</span>
+                    <div>
+                        <p class="user-name" id="userName"></p>
+                        <p class="user-role" id="userRole">Empleado</p>
+                    </div>
+                </div>
+                <button class="btn-logout" id="btnLogout">
+                    <span>🚪</span> Cerrar Sesión
                 </button>
             </div>
-        </div>
+        </aside>
 
-        <!-- Estadísticas -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">🐄</div>
-                <div class="stat-value" id="statTotal">0</div>
-                <div class="stat-label">Total Animales</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-value" id="statActivos">0</div>
-                <div class="stat-label">Activos</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⚖️</div>
-                <div class="stat-value" id="statPeso">0 kg</div>
-                <div class="stat-label">Peso Promedio</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🏥</div>
-                <div class="stat-value" id="statTratamiento">0</div>
-                <div class="stat-label">En Tratamiento</div>
-            </div>
-        </div>
-
-        <!-- Tabla -->
-        <div class="table-card">
-            <div class="table-header">
-                <div class="search-box">
-                    <input 
-                        type="text" 
-                        class="search-input" 
-                        id="searchInput"
-                        placeholder="Buscar por identificación, especie o raza..."
-                    >
-                    <span class="search-icon">🔍</span>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    🐮 Gestión de Ganado
+                </h1>
+                <p class="page-subtitle">
+                    <strong id="empresaName">Empresa</strong> - Administra tu inventario de ganado
+                </p>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="btnNuevoAnimal">
+                        ➕ Registrar Animal
+                    </button>
                 </div>
             </div>
 
-            <div class="table-container">
-                <table id="ganadoTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Especie</th>
-                            <th>Raza</th>
-                            <th>Género</th>
-                            <th>Peso</th>
-                            <th>Estado</th>
-                            <th>Fecha Registro</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ganadoTableBody">
-                        <tr>
-                            <td colspan="8">
-                                <div class="empty-state">
-                                    <div class="empty-state-icon">🐄</div>
-                                    <p>No hay animales registrados</p>
-                                    <p style="font-size: 13px; margin-top: 8px;">Haz clic en "Registrar Animal" para comenzar</p>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Estadísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🐄</div>
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">Total Animales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="statActivos">0</div>
+                    <div class="stat-label">Activos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚖️</div>
+                    <div class="stat-value" id="statPeso">0 kg</div>
+                    <div class="stat-label">Peso Promedio</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏥</div>
+                    <div class="stat-value" id="statTratamiento">0</div>
+                    <div class="stat-label">En Tratamiento</div>
+                </div>
             </div>
-        </div>
+
+            <!-- Tabla -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="search-box">
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            id="searchInput"
+                            placeholder="Buscar por identificación, especie o raza..."
+                        >
+                        <span class="search-icon">🔍</span>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="ganadoTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Especie</th>
+                                <th>Raza</th>
+                                <th>Género</th>
+                                <th>Peso</th>
+                                <th>Estado</th>
+                                <th>Fecha Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ganadoTableBody">
+                            <tr>
+                                <td colspan="8">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">🐄</div>
+                                        <p>No hay animales registrados</p>
+                                        <p style="font-size: 13px; margin-top: 8px;">Haz clic en "Registrar Animal" para comenzar</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- Modal Registro/Edición -->
@@ -645,20 +629,20 @@
                             class="form-input" 
                             id="identificacion" 
                             placeholder="Ej: BOV-001"
-                            
+                            required
                         >
                     </div>
 
-                 <div class="form-group">
-    <label class="form-label" for="especie">Especie *</label>
-    <input 
-        type="text" 
-        class="form-input" 
-        id="especie" 
-        placeholder="Ej: Bovino, Porcino, etc."
-        required
-    >
-</div>
+                    <div class="form-group">
+                        <label class="form-label" for="especie">Especie *</label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            id="especie" 
+                            placeholder="Ej: Bovino, Porcino, etc."
+                            required
+                        >
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -791,26 +775,26 @@
 
     // Actualizar UI según permisos
     function actualizarUISegunPermisos() {
-        // Ocultar botón de nuevo animal si no tiene permiso
         if (!permisosUsuario.ganado) {
             const btnNuevo = document.getElementById('btnNuevoAnimal');
             if (btnNuevo) {
                 btnNuevo.style.display = 'none';
             }
         }
+    }
 
-        // Ocultar botones de editar si no tiene permiso
-        if (!permisosUsuario.editar_propios) {
-            document.querySelectorAll('.btn-editar').forEach(btn => {
-                btn.style.display = 'none';
-            });
-        }
-
-        // Ocultar botones de eliminar si no tiene permiso
-        if (!permisosUsuario.eliminar_propios) {
-            document.querySelectorAll('.btn-danger').forEach(btn => {
-                btn.style.display = 'none';
-            });
+    // Mostrar menú admin
+    function mostrarMenuAdmin() {
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        const adminLink = document.getElementById('adminLink');
+        
+        if (adminLink) {
+            if (usuario && usuario.rol === 'administrador') {
+                adminLink.style.display = 'flex';
+                document.getElementById('userRole').textContent = 'Administrador';
+            } else {
+                adminLink.style.display = 'none';
+            }
         }
     }
 
@@ -819,12 +803,15 @@
         if (!verificarAutenticacion()) return;
         
         await cargarPermisos();
-
-        // Obtener datos del usuario
+        mostrarMenuAdmin();
+        
         const usuario = JSON.parse(localStorage.getItem('usuario'));
+        
         if (usuario && usuario.empresa) {
             empresaId = usuario.empresa.id;
             document.getElementById('empresaName').textContent = usuario.empresa.nombre;
+            document.getElementById('empresaNombre').textContent = usuario.empresa.nombre;
+            document.getElementById('userName').textContent = usuario.nombreUsuario;
             await cargarGanado();
             await cargarEstadisticas();
         }
@@ -835,6 +822,11 @@
         document.getElementById('cancelarAnimal').addEventListener('click', cerrarModal);
         document.getElementById('animalForm').addEventListener('submit', guardarAnimal);
         document.getElementById('searchInput').addEventListener('input', filtrarTabla);
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            window.location.href = '/index.html';
+        });
 
         // Cerrar modal al hacer clic fuera
         document.getElementById('modalAnimal').addEventListener('click', (e) => {
@@ -955,7 +947,7 @@
             return;
         }
         
-        document.getElementById('modalTitle').innerHTML = '🐄 Registrar Nuevo Animal';
+document.getElementById('modalTitle').innerHTML = '🐄 Registrar Nuevo Animal';
         document.getElementById('animalForm').reset();
         document.getElementById('animalId').value = '';
         document.getElementById('modalError').style.display = 'none';
@@ -1128,5 +1120,24 @@
         });
     }
 </script>
+
+<script>
+    // Script para el sidebar móvil
+    const btnDrawer = document.getElementById('btnDrawer');
+    const sidebar = document.querySelector('.sidebar');
+
+    btnDrawer.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+    });
+
+    document.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', () => sidebar.classList.remove('open'));
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) sidebar.classList.remove('open');
+    });
+</script>
+
 </body>
 </html>

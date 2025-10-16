@@ -4,14 +4,56 @@ let usuarioActual = null;
 let usuarios = [];
 let usuarioSeleccionado = null;
 
+(function verificarAccesoAdmin() {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    
+    if (!usuario || usuario.rol !== 'administrador') {
+        alert('⚠️ Acceso denegado. Solo los administradores pueden acceder a esta sección.');
+        window.location.href = '/dashboard.html';
+        return;
+    }
+})();
+
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
     verificarAutenticacion();
     cargarDatosUsuario();
+    mostrarBotonRegistrarSocio(); // <-- AGREGAR AQUÍ
     cargarUsuarios();
     
     // Event listener para logout
     document.getElementById('btnLogout').addEventListener('click', cerrarSesion);
+    
+    // Event Listeners para Modal Registrar Socio
+    const btnRegistrarSocio = document.getElementById('btnRegistrarSocio');
+    const closeSocioModal = document.getElementById('closeSocioModal');
+    const cancelarSocio = document.getElementById('cancelarSocio');
+    const socioForm = document.getElementById('socioForm');
+    const modalRegistrarSocio = document.getElementById('modalRegistrarSocio');
+    
+    if (btnRegistrarSocio) {
+        btnRegistrarSocio.addEventListener('click', abrirModalRegistrarSocio);
+    }
+    
+    if (closeSocioModal) {
+        closeSocioModal.addEventListener('click', cerrarModalRegistrarSocio);
+    }
+    
+    if (cancelarSocio) {
+        cancelarSocio.addEventListener('click', cerrarModalRegistrarSocio);
+    }
+    
+    if (socioForm) {
+        socioForm.addEventListener('submit', registrarSocio);
+    }
+    
+    if (modalRegistrarSocio) {
+        modalRegistrarSocio.addEventListener('click', (e) => {
+            if (e.target === modalRegistrarSocio) {
+                cerrarModalRegistrarSocio();
+            }
+        });
+    }
 });
 
 // Verificar autenticación y rol
@@ -44,6 +86,110 @@ function cargarDatosUsuario() {
     if (usuarioActual) {
         document.getElementById('userName').textContent = usuarioActual.nombreUsuario;
         document.getElementById('empresaNombre').textContent = usuarioActual.empresa.nombre;
+    }
+}
+
+// Mostrar botón de registrar socio para administradores
+function mostrarBotonRegistrarSocio() {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    const btnRegistrarSocio = document.getElementById('btnRegistrarSocio');
+    
+    if (btnRegistrarSocio && usuario && usuario.rol === 'administrador') {
+        btnRegistrarSocio.style.display = 'flex';
+    }
+}
+
+// Abrir modal de registrar socio
+function abrirModalRegistrarSocio() {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    
+    if (usuario && usuario.rol === 'administrador') {
+        document.getElementById('socioEmpresa').value = usuario.empresa.nombre;
+        document.getElementById('socioForm').reset();
+        document.getElementById('socioEmpresa').value = usuario.empresa.nombre;
+        document.getElementById('socioError').style.display = 'none';
+        document.getElementById('modalRegistrarSocio').classList.add('active');
+    } else {
+        alert('Solo los administradores pueden registrar socios');
+    }
+}
+
+// Cerrar modal de registrar socio
+function cerrarModalRegistrarSocio() {
+    document.getElementById('modalRegistrarSocio').classList.remove('active');
+}
+
+// Registrar nuevo socio
+async function registrarSocio(e) {
+    e.preventDefault();
+    
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    
+    if (usuario.rol !== 'administrador') {
+        alert('Solo los administradores pueden registrar socios');
+        return;
+    }
+    
+    const nombreUsuario = document.getElementById('socioUsuario').value.trim().toLowerCase();
+    const password = document.getElementById('socioPassword').value;
+    const nombreEmpresa = document.getElementById('socioEmpresa').value;
+    
+    // Validaciones
+    if (!nombreUsuario || !password) {
+        document.getElementById('socioError').textContent = 'Por favor completa todos los campos';
+        document.getElementById('socioError').style.display = 'block';
+        return;
+    }
+    
+    if (password.length < 6) {
+        document.getElementById('socioError').textContent = 'La contraseña debe tener al menos 6 caracteres';
+        document.getElementById('socioError').style.display = 'block';
+        return;
+    }
+    
+    if (!/^[a-z0-9_]+$/.test(nombreUsuario)) {
+        document.getElementById('socioError').textContent = 'El nombre de usuario solo puede contener letras minúsculas, números y guiones bajos';
+        document.getElementById('socioError').style.display = 'block';
+        return;
+    }
+    
+    const token = localStorage.getItem('token');
+    const btn = document.getElementById('guardarSocio');
+    const btnText = btn.querySelector('.btn-text');
+    
+    btn.disabled = true;
+    btnText.textContent = '⏳ Registrando...';
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                nombreEmpresa: nombreEmpresa,
+                nombreUsuario: nombreUsuario,
+                password: password
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Error al registrar socio');
+        }
+        
+        mostrarMensajeExito(`✓ Socio "${nombreUsuario}" registrado exitosamente en ${nombreEmpresa}`);
+        cerrarModalRegistrarSocio();
+        cargarUsuarios(); // Recargar la lista de usuarios
+        
+    } catch (error) {
+        document.getElementById('socioError').textContent = error.message;
+        document.getElementById('socioError').style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        btnText.textContent = 'Registrar Socio';
     }
 }
 
@@ -282,9 +428,14 @@ function mostrarMensajeExito(mensaje) {
 
 // Click fuera del modal para cerrar
 window.onclick = function(event) {
-    const modal = document.getElementById('permisosModal');
-    if (event.target === modal) {
+    const modalPermisos = document.getElementById('permisosModal');
+    const modalSocio = document.getElementById('modalRegistrarSocio');
+    
+    if (event.target === modalPermisos) {
         cerrarModalPermisos();
     }
+    
+    if (event.target === modalSocio) {
+        cerrarModalRegistrarSocio();
+    }
 }
-

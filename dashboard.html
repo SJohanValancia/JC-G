@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>Dashboard - JC-G</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
     <style>
         * {
             margin: 0;
@@ -496,67 +498,107 @@
 </head>
 <body>
 
-     <nav class="navbar">
-        <div class="navbar-container">
-            <a href="/" class="navbar-brand">
-                🐄 JC-G
-            </a>
-            <ul class="navbar-menu">
-                <li><a href="/dashboard.html" class="navbar-link">📊 aportes</a></li>
-                <li><a href="/ganado.html" class="navbar-link active">🐮 Gestión de Ganado</a></li>
-            </ul>
-        </div>
-    </nav>
+    <button class="btn-drawer" id="btnDrawer">☰</button>
 
     <div class="dashboard-container">
-        <header class="header">
-            <div class="welcome-section">
-                <div class="greeting">
-                    <span class="time-emoji" id="timeEmoji">🌅</span>
-                    <span id="greetingText">¡Buenos días!</span>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🐄</span>
+                    <h2>JC-G</h2>
                 </div>
+                <p class="empresa-nombre" id="empresaNombre"></p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span>aportes</span>
+                </a>
+                <a href="/ganado.html" class="nav-item">
+                    <span class="nav-icon">🐄</span>
+                    <span>Ganado</span>
+                </a>
+
+                <a href="/gastos.html" class="nav-item">
+                    <span class="nav-icon">💸</span>
+                    <span>Gastos</span>
+                </a>
+<!-- ANTES -->
+<a href="/administrador.html" class="nav-item" id="adminLink" style="display: none;">
+    <span class="nav-icon">👥</span>
+    <span>Administración</span>
+</a>
+
+<!-- DESPUÉS - sin cambios en HTML, pero agrega este script -->
+            </nav>
+
+            <div class="sidebar-footer">
                 <div class="user-info">
-                    <strong id="userName">Usuario</strong>
+                    <span class="user-icon">👤</span>
+                    <div>
+                        <p class="user-name" id="userName"></p>
+                        <p class="user-role" id="userRole">Empleado</p>
+                    </div>
                 </div>
-                <div class="empresa-badge">
-                    🏢 <span id="empresaName">Empresa</span>
-                </div>
-            </div>
-            <div class="header-actions">
-                <button class="btn btn-primary" id="btnNuevoAporte">
-                    💰 Nuevo Aporte
-                </button>
-                <button class="btn btn-secondary" id="btnCerrarSesion">
-                    🚪 Salir
+                <button class="btn-logout" id="btnLogout">
+                    <span>🚪</span> Cerrar Sesión
                 </button>
             </div>
-        </header>
+        </aside>
 
-        <div class="content-grid">
-            <div class="card">
-                <h2 class="card-title">
-                    📊 Resumen Financiero
-                </h2>
-                <div style="padding: 20px; text-align: center;">
-                    <div style="font-size: 14px; color: #666; margin-bottom: 8px;">Total Aportes</div>
-                    <div style="font-size: 48px; font-weight: 700; color: #2d5016;" id="totalAportes">$0</div>
-                    <div style="font-size: 14px; color: #999; margin-top: 8px;" id="cantidadAportes">0 aportes registrados</div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="welcome-section">
+                    <div class="greeting">
+                        <span class="time-emoji" id="timeEmoji">🌅</span>
+                        <span id="greetingText">¡Buenos días!</span>
+                    </div>
+                    <div class="user-info">
+                        <strong id="userName">Usuario</strong>
+                    </div>
+                    <div class="empresa-badge">
+                        🏢 <span id="empresaName">Empresa</span>
+                    </div>
                 </div>
-            </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="btnNuevoAporte">
+                        💰 Nuevo Aporte
+                    </button>
+                    <button class="btn btn-secondary" id="btnCerrarSesion">
+                        🚪 Salir
+                    </button>
+                </div>
+            </header>
 
-            <div class="card">
-                <h2 class="card-title">
-                    💵 Aportes Recientes
-                </h2>
-                <div class="aportes-list" id="aportesList">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🐄</div>
-                        <p>No hay aportes registrados aún</p>
-                        <p style="font-size: 13px; margin-top: 8px;">Haz clic en "Nuevo Aporte" para comenzar</p>
+            <div class="content-grid">
+                <div class="card">
+                    <h2 class="card-title">
+                        📊 Resumen Financiero
+                    </h2>
+                    <div style="padding: 20px; text-align: center;">
+                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">Total Aportes</div>
+                        <div style="font-size: 48px; font-weight: 700; color: #2d5016;" id="totalAportes">$0</div>
+                        <div style="font-size: 14px; color: #999; margin-top: 8px;" id="cantidadAportes">0 aportes registrados</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">
+                        💵 Aportes Recientes
+                    </h2>
+                    <div class="aportes-list" id="aportesList">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🐄</div>
+                            <p>No hay aportes registrados aún</p>
+                            <p style="font-size: 13px; margin-top: 8px;">Haz clic en "Nuevo Aporte" para comenzar</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <!-- Modal Nuevo Aporte -->
@@ -646,6 +688,19 @@
         }
     }
 
+    // Agregar después de la función cargarPermisos()
+function mostrarMenuAdmin() {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    const adminLink = document.getElementById('adminLink');
+    
+    if (usuario && usuario.rol === 'administrador') {
+        adminLink.style.display = 'flex';
+    } else {
+        adminLink.style.display = 'none';
+    }
+}
+
+
     // Actualizar UI según permisos
     function actualizarUISegunPermisos() {
         // Ocultar botón de nuevo aporte si no tiene permiso
@@ -666,12 +721,13 @@
     }
 
     // Inicialización
-    document.addEventListener('DOMContentLoaded', async () => {
-        if (!verificarAutenticacion()) return;
-        
-        await cargarPermisos();
-        
-        const usuario = JSON.parse(localStorage.getItem('usuario'));
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!verificarAutenticacion()) return;
+    
+    await cargarPermisos();
+    mostrarMenuAdmin(); // <-- AGREGAR ESTA LÍNEA
+    
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
 
         // Configurar saludo según hora
         function setGreeting() {
@@ -874,6 +930,22 @@
 
         // Actualizar cada 30 segundos
         setInterval(loadAportes, 30000);
+    });
+</script>
+<script>
+    const btnDrawer = document.getElementById('btnDrawer');
+    const sidebar = document.querySelector('.sidebar');
+
+    btnDrawer.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+    });
+
+    document.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', () => sidebar.classList.remove('open'));
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) sidebar.classList.remove('open');
     });
 </script>
 </body>

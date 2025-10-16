@@ -2,39 +2,16 @@
 const API_URL = 'https://jc-g.onrender.com/api';
 
 // Elementos del DOM
-const tabButtons = document.querySelectorAll('.tab-btn');
 const loginForm = document.getElementById('loginForm');
-const registerForm = document.getElementById('registerForm');
 const loginError = document.getElementById('loginError');
-const registerError = document.getElementById('registerError');
-const footerLink = document.getElementById('switchForm');
-const footerTextLogin = document.querySelector('.footer-text-login');
-const footerTextRegister = document.querySelector('.footer-text-register');
-
-// Estado actual
-let currentTab = 'login';
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
     // Verificar si ya hay sesión
     checkSession();
     
-    // Event listeners para tabs
-    tabButtons.forEach(btn => {
-        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-    });
-    
-    // Event listeners para formularios
+    // Event listener para formulario
     loginForm.addEventListener('submit', handleLogin);
-    registerForm.addEventListener('submit', handleRegister);
-    
-    // Event listener para cambiar formulario
-    footerLink.addEventListener('click', () => {
-        switchTab(currentTab === 'login' ? 'register' : 'login');
-    });
-    
-    // Actualizar texto del footer
-    updateFooterText();
 });
 
 // Verificar si hay sesión activa
@@ -50,7 +27,7 @@ function checkSession() {
             if (user.empresa && user.empresa.nombre) {
                 console.log('Usuario logueado:', user);
                 console.log('Empresa:', user.empresa.nombre);
-                // window.location.href = '/dashboard.html';
+                window.location.href = '/dashboard.html';
             } else {
                 // Limpiar datos viejos si no tiene la estructura correcta
                 console.log('Datos de sesión inválidos, limpiando...');
@@ -66,48 +43,6 @@ function checkSession() {
     }
 }
 
-// Cambiar entre login y registro
-function switchTab(tab) {
-    currentTab = tab;
-    
-    // Actualizar botones
-    tabButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === tab);
-    });
-    
-    // Actualizar formularios
-    loginForm.classList.toggle('active', tab === 'login');
-    registerForm.classList.toggle('active', tab === 'register');
-    
-    // Limpiar errores
-    hideError(loginError);
-    hideError(registerError);
-    
-    // Limpiar campos
-    if (tab === 'login') {
-        loginForm.reset();
-    } else {
-        registerForm.reset();
-    }
-    
-    // Actualizar footer
-    updateFooterText();
-}
-
-// Actualizar texto del footer
-function updateFooterText() {
-    if (currentTab === 'login') {
-        footerTextLogin.style.display = 'inline';
-        footerTextRegister.style.display = 'none';
-        footerLink.textContent = 'Regístrate aquí';
-    } else {
-        footerTextLogin.style.display = 'none';
-        footerTextRegister.style.display = 'inline';
-        footerLink.textContent = 'Inicia sesión';
-    }
-}
-
-// Manejar login
 // Manejar login
 async function handleLogin(e) {
     e.preventDefault();
@@ -148,78 +83,13 @@ async function handleLogin(e) {
         // Mostrar mensaje de éxito
         showSuccess(`¡Bienvenido ${result.usuario.nombreUsuario}! Redirigiendo...`);
         
-        // Redirigir según el rol
-        setTimeout(() => {
-            if (result.usuario.rol === 'administrador') {
-                window.location.href = '/administrador.html';
-            } else {
-                window.location.href = '/dashboard.html';
-            }
-        }, 1500);
-        
-    } catch (error) {
-        showError(loginError, error.message);
-        setLoading(btn, false);
-    }
-}
-// Manejar registro
-async function handleRegister(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target);
-    const data = {
-        nombreEmpresa: formData.get('nombreEmpresa').trim(),
-        nombreUsuario: formData.get('nombreUsuario').trim().toLowerCase(),
-        password: formData.get('password')
-    };
-    
-    // Validaciones básicas
-    if (!data.nombreEmpresa || !data.nombreUsuario || !data.password) {
-        showError(registerError, 'Por favor completa todos los campos');
-        return;
-    }
-    
-    if (data.password.length < 6) {
-        showError(registerError, 'La contraseña debe tener al menos 6 caracteres');
-        return;
-    }
-    
-    if (!/^[a-z0-9_]+$/.test(data.nombreUsuario)) {
-        showError(registerError, 'El nombre de usuario solo puede contener letras minúsculas, números y guiones bajos');
-        return;
-    }
-    
-    const btn = e.target.querySelector('.btn-primary');
-    setLoading(btn, true);
-    hideError(registerError);
-    
-    try {
-        const response = await fetch(`${API_URL}/auth/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        
-        const result = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(result.error || 'Error al registrar usuario');
-        }
-        
-        // Guardar sesión
-        localStorage.setItem('token', result.token);
-        localStorage.setItem('usuario', JSON.stringify(result.usuario));
-        
-        // Mostrar mensaje de éxito
-        showSuccess(`¡Cuenta creada exitosamente para ${result.usuario.empresa.nombre}! Redirigiendo...`);
-        
         // Redirigir al dashboard
         setTimeout(() => {
             window.location.href = '/dashboard.html';
         }, 1500);
         
     } catch (error) {
-        showError(registerError, error.message);
+        showError(loginError, error.message);
         setLoading(btn, false);
     }
 }

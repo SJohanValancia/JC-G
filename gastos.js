@@ -8,6 +8,7 @@ let gastoEditando = null;
 document.addEventListener('DOMContentLoaded', () => {
     verificarAutenticacion();
     cargarDatosUsuario();
+    mostrarMenuAdmin();
     cargarGastos();
     cargarEstadisticas();
     inicializarEventos();
@@ -42,6 +43,16 @@ function cargarDatosUsuario() {
     if (usuarioActual) {
         document.getElementById('userName').textContent = usuarioActual.nombreUsuario;
         document.getElementById('empresaNombre').textContent = usuarioActual.empresa.nombre;
+    }
+}
+
+// Agregar después de cargarDatosUsuario()
+function mostrarMenuAdmin() {
+    if (usuarioActual && usuarioActual.rol === 'administrador') {
+        const adminLink = document.getElementById('adminLink');
+        if (adminLink) {
+            adminLink.style.display = 'flex';
+        }
     }
 }
 
