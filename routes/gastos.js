@@ -44,7 +44,7 @@ router.post('/multiple', verificarPermiso('gastos'), async (req, res) => {
       descripcion: gasto.descripcion,
       monto: gasto.monto,
       fecha: gasto.fecha || Date.now(),
-      categoria: gasto.categoria || 'otros',
+      categoria: gasto.categoria ? gasto.categoria.trim() : 'General',
       usuarioRegistro: usuarioId,
       empresa: empresaId
     }));
@@ -72,7 +72,7 @@ router.post('/', verificarPermiso('gastos'), async (req, res) => {
       descripcion,
       monto,
       fecha: fecha || Date.now(),
-      categoria: categoria || 'otros',
+      categoria: categoria ? categoria.trim() : 'General',
       usuarioRegistro: usuarioId,
       empresa: empresaId
     });
@@ -119,7 +119,7 @@ router.put('/:id', verificarPermiso('gastos'), async (req, res) => {
     gasto.descripcion = descripcion || gasto.descripcion;
     gasto.monto = monto !== undefined ? monto : gasto.monto;
     gasto.fecha = fecha || gasto.fecha;
-    gasto.categoria = categoria || gasto.categoria;
+    gasto.categoria = categoria ? categoria.trim() : gasto.categoria;
     gasto.fechaActualizacion = Date.now();
 
     await gasto.save();

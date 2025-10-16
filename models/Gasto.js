@@ -27,8 +27,8 @@ const gastoSchema = new mongoose.Schema({
   },
   categoria: {
     type: String,
-    enum: ['alimentacion', 'veterinario', 'mantenimiento', 'transporte', 'otros'],
-    default: 'otros'
+    trim: true,
+    default: 'General'
   },
   fechaCreacion: {
     type: Date,

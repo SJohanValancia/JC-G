@@ -51,7 +51,7 @@ function inicializarEventos() {
     document.getElementById('btnGenerar').addEventListener('click', generarCamposGastos);
     document.getElementById('btnCancelar').addEventListener('click', limpiarFormulario);
     document.getElementById('btnGuardar').addEventListener('click', guardarGastos);
-    document.getElementById('filtroCategoria').addEventListener('change', filtrarGastos);
+    document.getElementById('filtroCategoria').addEventListener('input', filtrarGastos);
 }
 
 // Generar campos de gastos
@@ -102,14 +102,8 @@ function crearCampoGasto(numero) {
                 <input type="number" class="input-field" name="monto" min="0" step="0.01" required placeholder="0.00">
             </div>
             <div class="form-group">
-                <label>Categoría *</label>
-                <select class="input-field" name="categoria" required>
-                    <option value="alimentacion">🌾 Alimentación</option>
-                    <option value="veterinario">💉 Veterinario</option>
-                    <option value="mantenimiento">🔧 Mantenimiento</option>
-                    <option value="transporte">🚛 Transporte</option>
-                    <option value="otros">📦 Otros</option>
-                </select>
+                <label>Categoría</label>
+                <input type="text" class="input-field" name="categoria" placeholder="Ej: Alimentación, Veterinario, etc.">
             </div>
             <div class="form-group">
                 <label>Fecha *</label>
@@ -158,10 +152,10 @@ async function guardarGastos() {
     gastosGroups.forEach((group, index) => {
         const descripcion = group.querySelector('[name="descripcion"]').value.trim();
         const monto = parseFloat(group.querySelector('[name="monto"]').value);
-        const categoria = group.querySelector('[name="categoria"]').value;
+        const categoria = group.querySelector('[name="categoria"]').value.trim() || 'General';
         const fecha = group.querySelector('[name="fecha"]').value;
         
-        if (!descripcion || !monto || monto <= 0 || !categoria || !fecha) {
+        if (!descripcion || !monto || monto <= 0 || !fecha) {
             mostrarMensaje(`El gasto #${index + 1} tiene campos incompletos o inválidos`, 'error');
             hayErrores = true;
             return;
@@ -283,7 +277,7 @@ function mostrarGastos(gastosArray) {
         return `
             <div class="gasto-card" style="animation-delay: ${index * 0.05}s">
                 <div class="gasto-info">
-                    <div class="gasto-categoria-icon categoria-${gasto.categoria}">
+                    <div class="gasto-categoria-icon ${obtenerClaseCategoria(gasto.categoria)}">
                         ${obtenerIconoCategoria(gasto.categoria)}
                     </div>
                     <div class="gasto-detalles">
@@ -296,7 +290,7 @@ function mostrarGastos(gastosArray) {
                                 <span>👤</span> ${gasto.usuarioRegistro.nombreUsuario}
                             </span>
                             <span class="gasto-meta-item">
-                                <span>📂</span> ${formatearCategoria(gasto.categoria)}
+                                <span>📂</span> ${gasto.categoria}
                             </span>
                         </div>
                     </div>
@@ -321,40 +315,58 @@ function mostrarGastos(gastosArray) {
     }).join('');
 }
 
-// Obtener icono de categoría
+// Obtener icono de categoría basado en palabras clave
 function obtenerIconoCategoria(categoria) {
-    const iconos = {
-        'alimentacion': '🌾',
-        'veterinario': '💉',
-        'mantenimiento': '🔧',
-        'transporte': '🚛',
-        'otros': '📦'
-    };
-    return iconos[categoria] || '📦';
-}
-
-// Formatear categoría
-function formatearCategoria(categoria) {
-    const categorias = {
-        'alimentacion': 'Alimentación',
-        'veterinario': 'Veterinario',
-        'mantenimiento': 'Mantenimiento',
-        'transporte': 'Transporte',
-        'otros': 'Otros'
-    };
-    return categorias[categoria] || 'Otros';
-}
-
-// Filtrar gastos
-function filtrarGastos() {
-    const categoriaFiltro = document.getElementById('filtroCategoria').value;
+    const categoriaLower = categoria.toLowerCase();
     
-    if (!categoriaFiltro) {
+    if (categoriaLower.includes('aliment') || categoriaLower.includes('comida') || categoriaLower.includes('forraje')) {
+        return '🌾';
+    } else if (categoriaLower.includes('veterinari') || categoriaLower.includes('médico') || categoriaLower.includes('salud')) {
+        return '💉';
+    } else if (categoriaLower.includes('mantenimiento') || categoriaLower.includes('reparación') || categoriaLower.includes('arreglo')) {
+        return '🔧';
+    } else if (categoriaLower.includes('transporte') || categoriaLower.includes('vehículo') || categoriaLower.includes('gasolina')) {
+        return '🚛';
+    } else if (categoriaLower.includes('servicios') || categoriaLower.includes('agua') || categoriaLower.includes('luz')) {
+        return '⚡';
+    } else if (categoriaLower.includes('herramienta') || categoriaLower.includes('equipo')) {
+        return '🛠️';
+    } else {
+        return '📦';
+    }
+}
+
+// Obtener clase de categoría para colores
+function obtenerClaseCategoria(categoria) {
+    const categoriaLower = categoria.toLowerCase();
+    
+    if (categoriaLower.includes('aliment') || categoriaLower.includes('comida') || categoriaLower.includes('forraje')) {
+        return 'categoria-alimentacion';
+    } else if (categoriaLower.includes('veterinari') || categoriaLower.includes('médico') || categoriaLower.includes('salud')) {
+        return 'categoria-veterinario';
+    } else if (categoriaLower.includes('mantenimiento') || categoriaLower.includes('reparación') || categoriaLower.includes('arreglo')) {
+        return 'categoria-mantenimiento';
+    } else if (categoriaLower.includes('transporte') || categoriaLower.includes('vehículo') || categoriaLower.includes('gasolina')) {
+        return 'categoria-transporte';
+    } else {
+        return 'categoria-otros';
+    }
+}
+
+// Filtrar gastos por categoría
+function filtrarGastos() {
+    const searchTerm = document.getElementById('filtroCategoria').value.toLowerCase().trim();
+    
+    if (!searchTerm) {
         mostrarGastos(gastos);
         return;
     }
     
-    const gastosFiltrados = gastos.filter(gasto => gasto.categoria === categoriaFiltro);
+    const gastosFiltrados = gastos.filter(gasto => 
+        gasto.categoria.toLowerCase().includes(searchTerm) ||
+        gasto.descripcion.toLowerCase().includes(searchTerm)
+    );
+    
     mostrarGastos(gastosFiltrados);
 }
 
@@ -395,10 +407,10 @@ async function guardarEdicion() {
     
     const descripcion = document.getElementById('editDescripcion').value.trim();
     const monto = parseFloat(document.getElementById('editMonto').value);
-    const categoria = document.getElementById('editCategoria').value;
+    const categoria = document.getElementById('editCategoria').value.trim() || 'General';
     const fecha = document.getElementById('editFecha').value;
     
-    if (!descripcion || !monto || monto <= 0 || !categoria || !fecha) {
+    if (!descripcion || !monto || monto <= 0 || !fecha) {
         mostrarMensaje('Por favor completa todos los campos correctamente', 'error');
         return;
     }
@@ -495,7 +507,9 @@ async function cargarEstadisticas() {
         const stats = await response.json();
         
         document.getElementById('totalGastado').textContent = 
-            `$${stats.total.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;document.getElementById('totalGastos').textContent = stats.cantidad;
+            `$${stats.total.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        
+        document.getElementById('totalGastos').textContent = stats.cantidad;
         
         const promedio = stats.cantidad > 0 ? stats.total / stats.cantidad : 0;
         document.getElementById('promedioGasto').textContent = 

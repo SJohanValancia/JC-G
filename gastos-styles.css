@@ -1016,3 +1016,34 @@
         page-break-inside: avoid;
     }
 }
+
+/* Input de filtro/búsqueda de categoría */
+.filtro-input {
+    padding: 12px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563;
+    background: white;
+    transition: all var(--transition-fast);
+    min-width: 250px;
+}
+
+.filtro-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(45, 80, 22, 0.1);
+}
+
+.filtro-input::placeholder {
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .filtro-input {
+        width: 100%;
+        min-width: auto;
+    }
+}
