@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const authRoutes = require('./routes/auth');
 const aportesRoutes = require('./routes/aportes'); // NUEVO
+const ganadoRoutes = require('./routes/ganado');
 
 const app = express();
 
@@ -23,6 +24,7 @@ mongoose.connect(process.env.MONGO_URI)
 // Rutas API
 app.use('/api/auth', authRoutes);
 app.use('/api/aportes', aportesRoutes); // NUEVO
+app.use('/api/ganado', ganadoRoutes);
 
 // Ruta de salud/prueba
 app.get('/api/health', (req, res) => {
