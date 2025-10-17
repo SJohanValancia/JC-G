@@ -168,60 +168,90 @@
             </div>
 
             <!-- Formulario de Registro -->
-            <form id="registerForm" class="auth-form active">
-                <div class="form-group">
-                    <label for="nombreEmpresa">
-                        <span class="label-icon">🏢</span>
-                        Nombre de la Empresa
-                    </label>
-                    <input 
-                        type="text" 
-                        id="nombreEmpresa" 
-                        name="nombreEmpresa"
-                        placeholder="Ej: Hacienda El Roble"
-                        required
-                    >
-                    <small class="form-hint">💡 Si la empresa ya existe, te unirás automáticamente</small>
-                </div>
+<form id="registerForm" class="auth-form active">
+    <div class="form-group">
+        <label for="nombreEmpresa">
+            <span class="label-icon">🏢</span>
+            Nombre de la Empresa
+        </label>
+        <input 
+            type="text" 
+            id="nombreEmpresa" 
+            name="nombreEmpresa"
+            placeholder="Ej: Hacienda El Roble"
+            required
+        >
+        <small class="form-hint">💡 Si la empresa ya existe, te unirás automáticamente</small>
+    </div>
 
-                <div class="form-group">
-                    <label for="nombreUsuario">
-                        <span class="label-icon">👤</span>
-                        Nombre de Usuario (Administrador)
-                    </label>
-                    <input 
-                        type="text" 
-                        id="nombreUsuario" 
-                        name="nombreUsuario"
-                        placeholder="juanperez"
-                        required
-                    >
-                    <small class="form-hint">Sin espacios ni caracteres especiales</small>
-                </div>
+    <div class="form-group">
+        <label for="nombreUsuario">
+            <span class="label-icon">👤</span>
+            Nombre de Usuario (Administrador)
+        </label>
+        <input 
+            type="text" 
+            id="nombreUsuario" 
+            name="nombreUsuario"
+            placeholder="juanperez"
+            required
+        >
+        <small class="form-hint">Sin espacios ni caracteres especiales</small>
+    </div>
 
-                <div class="form-group">
-                    <label for="registerPassword">
-                        <span class="label-icon">🔒</span>
-                        Contraseña
-                    </label>
-                    <input 
-                        type="password" 
-                        id="registerPassword" 
-                        name="password"
-                        placeholder="••••••••"
-                        minlength="6"
-                        required
-                    >
-                    <small class="form-hint">Mínimo 6 caracteres</small>
-                </div>
+    <!-- NUEVO CAMPO: CÉDULA -->
+    <div class="form-group">
+        <label for="cedula">
+            <span class="label-icon">🆔</span>
+            Cédula (Opcional)
+        </label>
+        <input 
+            type="text" 
+            id="cedula" 
+            name="cedula"
+            placeholder="1234567890"
+        >
+        <small class="form-hint">Número de identificación</small>
+    </div>
 
-                <div id="registerError" class="error-message" style="display: none;"></div>
+    <!-- NUEVO CAMPO: TELÉFONO -->
+    <div class="form-group">
+        <label for="telefono">
+            <span class="label-icon">📱</span>
+            Teléfono (Opcional)
+        </label>
+        <input 
+            type="tel" 
+            id="telefono" 
+            name="telefono"
+            placeholder="3001234567"
+        >
+        <small class="form-hint">Número de contacto</small>
+    </div>
 
-                <button type="submit" class="btn-primary">
-                    <span class="btn-text">Crear Empresa</span>
-                    <span class="btn-loader" style="display: none;">⏳ Procesando...</span>
-                </button>
-            </form>
+    <div class="form-group">
+        <label for="registerPassword">
+            <span class="label-icon">🔑</span>
+            Contraseña
+        </label>
+        <input 
+            type="password" 
+            id="registerPassword" 
+            name="password"
+            placeholder="••••••••"
+            minlength="6"
+            required
+        >
+        <small class="form-hint">Mínimo 6 caracteres</small>
+    </div>
+
+    <div id="registerError" class="error-message" style="display: none;"></div>
+
+    <button type="submit" class="btn-primary">
+        <span class="btn-text">Crear Empresa</span>
+        <span class="btn-loader" style="display: none;">⏳ Procesando...</span>
+    </button>
+</form>
 
             <div class="auth-footer">
                 <p>

@@ -120,6 +120,7 @@ function cerrarModalRegistrarSocio() {
 }
 
 // Registrar nuevo socio
+// Registrar nuevo socio
 async function registrarSocio(e) {
     e.preventDefault();
     
@@ -132,11 +133,13 @@ async function registrarSocio(e) {
     
     const nombreUsuario = document.getElementById('socioUsuario').value.trim().toLowerCase();
     const password = document.getElementById('socioPassword').value;
+    const cedula = document.getElementById('socioCedula').value.trim() || null;
+    const telefono = document.getElementById('socioTelefono').value.trim() || null;
     const nombreEmpresa = document.getElementById('socioEmpresa').value;
     
     // Validaciones
     if (!nombreUsuario || !password) {
-        document.getElementById('socioError').textContent = 'Por favor completa todos los campos';
+        document.getElementById('socioError').textContent = 'Por favor completa todos los campos obligatorios';
         document.getElementById('socioError').style.display = 'block';
         return;
     }
@@ -170,7 +173,9 @@ async function registrarSocio(e) {
             body: JSON.stringify({
                 nombreEmpresa: nombreEmpresa,
                 nombreUsuario: nombreUsuario,
-                password: password
+                password: password,
+                cedula: cedula,
+                telefono: telefono
             })
         });
         
@@ -180,7 +185,7 @@ async function registrarSocio(e) {
             throw new Error(result.error || 'Error al registrar socio');
         }
         
-        mostrarMensajeExito(`✓ Socio "${nombreUsuario}" registrado exitosamente en ${nombreEmpresa}`);
+        mostrarMensajeExito(`✔ Socio "${nombreUsuario}" registrado exitosamente en ${nombreEmpresa}`);
         cerrarModalRegistrarSocio();
         cargarUsuarios(); // Recargar la lista de usuarios
         
@@ -230,6 +235,7 @@ async function cargarUsuarios() {
 }
 
 // Mostrar usuarios en el grid
+// Mostrar usuarios en el grid
 function mostrarUsuarios(usuarios) {
     const grid = document.getElementById('usuariosGrid');
     
@@ -257,6 +263,20 @@ function mostrarUsuarios(usuarios) {
             </div>
             
             <div class="usuario-stats">
+                ${usuario.cedula ? `
+                    <div class="stat-item">
+                        <span class="stat-label">Cédula:</span>
+                        <span class="stat-value">${usuario.cedula}</span>
+                    </div>
+                ` : ''}
+                
+                ${usuario.telefono ? `
+                    <div class="stat-item">
+                        <span class="stat-label">Teléfono:</span>
+                        <span class="stat-value">${usuario.telefono}</span>
+                    </div>
+                ` : ''}
+                
                 <div class="stat-item">
                     <span class="stat-label">Último aporte:</span>
                     <span class="stat-value">
@@ -288,9 +308,6 @@ function mostrarUsuarios(usuarios) {
                         <span>👑</span> Administrador
                     </button>
                 `}
-                <button class="btn-liquidacion" disabled title="Próximamente">
-                    <span>💰</span> Liquidación
-                </button>
             </div>
         </div>
     `).join('');

@@ -23,6 +23,17 @@ const usuarioSchema = new mongoose.Schema({
     enum: ['administrador', 'empleado'],
     default: 'empleado'
   },
+  // NUEVOS CAMPOS OPCIONALES
+  telefono: {
+    type: String,
+    trim: true,
+    default: null
+  },
+  cedula: {
+    type: String,
+    trim: true,
+    default: null
+  },
   fechaRegistro: {
     type: Date,
     default: Date.now

@@ -81,6 +81,7 @@ registerForm.addEventListener('submit', (e) => {
 });
 
 // Manejar registro
+// Manejar registro
 async function handleRegister(e) {
     e.preventDefault();
     
@@ -88,12 +89,14 @@ async function handleRegister(e) {
     const data = {
         nombreEmpresa: formData.get('nombreEmpresa').trim(),
         nombreUsuario: formData.get('nombreUsuario').trim().toLowerCase(),
-        password: formData.get('password')
+        password: formData.get('password'),
+        cedula: formData.get('cedula')?.trim() || null,
+        telefono: formData.get('telefono')?.trim() || null
     };
     
     // Validaciones básicas
     if (!data.nombreEmpresa || !data.nombreUsuario || !data.password) {
-        showError(registerError, 'Por favor completa todos los campos');
+        showError(registerError, 'Por favor completa todos los campos obligatorios');
         return;
     }
     

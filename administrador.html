@@ -247,56 +247,84 @@
 
         <div class="error-message" id="socioError"></div>
 
-        <form id="socioForm">
-            <div class="form-group">
-                <label class="form-label" for="socioEmpresa">🏢 Empresa</label>
-                <input 
-                    type="text" 
-                    class="form-input" 
-                    id="socioEmpresa" 
-                    readonly
-                    style="background-color: #f5f5f5; cursor: not-allowed;"
-                >
-            </div>
+       <form id="socioForm">
+    <div class="form-group">
+        <label class="form-label" for="socioEmpresa">🏢 Empresa</label>
+        <input 
+            type="text" 
+            class="form-input" 
+            id="socioEmpresa" 
+            readonly
+            style="background-color: #f5f5f5; cursor: not-allowed;"
+        >
+    </div>
 
-            <div class="form-group">
-                <label class="form-label" for="socioUsuario">👤 Nombre de Usuario *</label>
-                <input 
-                    type="text" 
-                    class="form-input" 
-                    id="socioUsuario" 
-                    placeholder="Ej: juanperez"
-                    required
-                >
-                <small style="font-size: 12px; color: #666; margin-top: 5px; display: block;">
-                    Sin espacios ni caracteres especiales (solo letras minúsculas, números y guiones bajos)
-                </small>
-            </div>
+    <div class="form-group">
+        <label class="form-label" for="socioUsuario">👤 Nombre de Usuario *</label>
+        <input 
+            type="text" 
+            class="form-input" 
+            id="socioUsuario" 
+            placeholder="Ej: juanperez"
+            required
+        >
+        <small style="font-size: 12px; color: #666; margin-top: 5px; display: block;">
+            Sin espacios ni caracteres especiales (solo letras minúsculas, números y guiones bajos)
+        </small>
+    </div>
 
-            <div class="form-group">
-                <label class="form-label" for="socioPassword">🔒 Contraseña *</label>
-                <input 
-                    type="password" 
-                    class="form-input" 
-                    id="socioPassword" 
-                    placeholder="••••••••"
-                    minlength="6"
-                    required
-                >
-                <small style="font-size: 12px; color: #666; margin-top: 5px; display: block;">
-                    Mínimo 6 caracteres
-                </small>
-            </div>
+    <!-- NUEVO CAMPO: CÉDULA -->
+    <div class="form-group">
+        <label class="form-label" for="socioCedula">🆔 Cédula (Opcional)</label>
+        <input 
+            type="text" 
+            class="form-input" 
+            id="socioCedula" 
+            placeholder="1234567890"
+        >
+        <small style="font-size: 12px; color: #666; margin-top: 5px; display: block;">
+            Número de identificación del socio
+        </small>
+    </div>
 
-            <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" id="cancelarSocio">
-                    Cancelar
-                </button>
-                <button type="submit" class="btn btn-primary" id="guardarSocio">
-                    <span class="btn-text">Registrar Socio</span>
-                </button>
-            </div>
-        </form>
+    <!-- NUEVO CAMPO: TELÉFONO -->
+    <div class="form-group">
+        <label class="form-label" for="socioTelefono">📱 Teléfono (Opcional)</label>
+        <input 
+            type="tel" 
+            class="form-input" 
+            id="socioTelefono" 
+            placeholder="3001234567"
+        >
+        <small style="font-size: 12px; color: #666; margin-top: 5px; display: block;">
+            Número de contacto del socio
+        </small>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label" for="socioPassword">🔑 Contraseña *</label>
+        <input 
+            type="password" 
+            class="form-input" 
+            id="socioPassword" 
+            placeholder="••••••••"
+            minlength="6"
+            required
+        >
+        <small style="font-size: 12px; color: #666; margin-top: 5px; display: block;">
+            Mínimo 6 caracteres
+        </small>
+    </div>
+
+    <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelarSocio">
+            Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary" id="guardarSocio">
+            <span class="btn-text">Registrar Socio</span>
+        </button>
+    </div>
+</form>
     </div>
 
 </body>
