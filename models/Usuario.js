@@ -23,7 +23,6 @@ const usuarioSchema = new mongoose.Schema({
     enum: ['administrador', 'empleado'],
     default: 'empleado'
   },
-  // NUEVOS CAMPOS OPCIONALES
   telefono: {
     type: String,
     trim: true,
@@ -33,6 +32,17 @@ const usuarioSchema = new mongoose.Schema({
     type: String,
     trim: true,
     default: null
+  },
+  // NUEVOS CAMPOS DE DEUDA
+  deuda: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  cuotas: {
+    type: Number,
+    default: 0,
+    min: 0
   },
   fechaRegistro: {
     type: Date,

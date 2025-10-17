@@ -3,6 +3,7 @@ const API_URL = 'https://jc-g.onrender.com/api';
 let usuarioActual = null;
 let usuarios = [];
 let usuarioSeleccionado = null;
+let usuarioDeudaSeleccionado = null; // NUEVO
 
 (function verificarAccesoAdmin() {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
@@ -18,13 +19,11 @@ let usuarioSeleccionado = null;
 document.addEventListener('DOMContentLoaded', () => {
     verificarAutenticacion();
     cargarDatosUsuario();
-    mostrarBotonRegistrarSocio(); // <-- AGREGAR AQUÍ
+    mostrarBotonRegistrarSocio();
     cargarUsuarios();
     
-    // Event listener para logout
     document.getElementById('btnLogout').addEventListener('click', cerrarSesion);
     
-    // Event Listeners para Modal Registrar Socio
     const btnRegistrarSocio = document.getElementById('btnRegistrarSocio');
     const closeSocioModal = document.getElementById('closeSocioModal');
     const cancelarSocio = document.getElementById('cancelarSocio');
@@ -54,6 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // NUEVO: Event listeners para cálculo de cuota
+    document.getElementById('montoDeuda')?.addEventListener('input', calcularValorCuota);
+    document.getElementById('numeroCuotas')?.addEventListener('input', calcularValorCuota);
 });
 
 // Verificar autenticación y rol
@@ -69,7 +72,6 @@ function verificarAutenticacion() {
     try {
         usuarioActual = JSON.parse(usuario);
         
-        // Verificar que sea administrador
         if (usuarioActual.rol !== 'administrador') {
             alert('No tienes permisos de administrador');
             window.location.href = '/dashboard.html';
@@ -81,7 +83,6 @@ function verificarAutenticacion() {
     }
 }
 
-// Cargar datos del usuario en la sidebar
 function cargarDatosUsuario() {
     if (usuarioActual) {
         document.getElementById('userName').textContent = usuarioActual.nombreUsuario;
@@ -89,7 +90,6 @@ function cargarDatosUsuario() {
     }
 }
 
-// Mostrar botón de registrar socio para administradores
 function mostrarBotonRegistrarSocio() {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     const btnRegistrarSocio = document.getElementById('btnRegistrarSocio');
@@ -99,7 +99,6 @@ function mostrarBotonRegistrarSocio() {
     }
 }
 
-// Abrir modal de registrar socio
 function abrirModalRegistrarSocio() {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     
@@ -114,13 +113,10 @@ function abrirModalRegistrarSocio() {
     }
 }
 
-// Cerrar modal de registrar socio
 function cerrarModalRegistrarSocio() {
     document.getElementById('modalRegistrarSocio').classList.remove('active');
 }
 
-// Registrar nuevo socio
-// Registrar nuevo socio
 async function registrarSocio(e) {
     e.preventDefault();
     
@@ -137,7 +133,6 @@ async function registrarSocio(e) {
     const telefono = document.getElementById('socioTelefono').value.trim() || null;
     const nombreEmpresa = document.getElementById('socioEmpresa').value;
     
-    // Validaciones
     if (!nombreUsuario || !password) {
         document.getElementById('socioError').textContent = 'Por favor completa todos los campos obligatorios';
         document.getElementById('socioError').style.display = 'block';
@@ -185,9 +180,9 @@ async function registrarSocio(e) {
             throw new Error(result.error || 'Error al registrar socio');
         }
         
-        mostrarMensajeExito(`✔ Socio "${nombreUsuario}" registrado exitosamente en ${nombreEmpresa}`);
+        mostrarMensajeExito(`✓ Socio "${nombreUsuario}" registrado exitosamente en ${nombreEmpresa}`);
         cerrarModalRegistrarSocio();
-        cargarUsuarios(); // Recargar la lista de usuarios
+        cargarUsuarios();
         
     } catch (error) {
         document.getElementById('socioError').textContent = error.message;
@@ -198,7 +193,6 @@ async function registrarSocio(e) {
     }
 }
 
-// Cargar usuarios de la empresa
 async function cargarUsuarios() {
     const loadingContainer = document.getElementById('loadingContainer');
     const errorContainer = document.getElementById('errorContainer');
@@ -234,8 +228,6 @@ async function cargarUsuarios() {
     }
 }
 
-// Mostrar usuarios en el grid
-// Mostrar usuarios en el grid
 function mostrarUsuarios(usuarios) {
     const grid = document.getElementById('usuariosGrid');
     
@@ -270,40 +262,78 @@ function mostrarUsuarios(usuarios) {
                     </div>
                 ` : ''}
                 
-${usuario.telefono ? `
-    <div class="stat-item">
-        <span class="stat-label">Teléfono:</span>
-        <a class="stat-value telefono" href="tel:${usuario.telefono}">
-            ${usuario.telefono}
-        </a>
-    </div>
-` : ''}
-                
-                <div class="stat-item">
-                    <span class="stat-label">Último aporte:</span>
-                    <span class="stat-value">
-                        ${usuario.ultimoAporte 
-                            ? `$${usuario.ultimoAporte.monto.toLocaleString()}`
-                            : 'Sin aportes'
-                        }
-                    </span>
-                </div>
-                ${usuario.ultimoAporte ? `
+                ${usuario.telefono ? `
                     <div class="stat-item">
-                        <span class="stat-label">Descripción:</span>
-                        <span class="stat-value">${usuario.ultimoAporte.descripcion}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Fecha:</span>
-                        <span class="stat-value">${formatearFecha(usuario.ultimoAporte.fecha)}</span>
+                        <span class="stat-label">Teléfono:</span>
+                        <a class="stat-value telefono" href="tel:${usuario.telefono}">
+                            ${usuario.telefono}
+                        </a>
                     </div>
                 ` : ''}
+
+                ${usuario.deuda && usuario.deuda > 0 ? `
+                    <!-- Deuda Original -->
+                    <div class="stat-item" style="background: #f3f4f6; padding: 8px; border-radius: 6px; margin-top: 8px;">
+                        <span class="stat-label" style="color: #6b7280;">📋 Deuda Original:</span>
+                        <span class="stat-value" style="color: #6b7280; font-weight: 600;">
+                            $${usuario.deuda.toLocaleString()}
+                        </span>
+                    </div>
+
+                    <!-- Total Aportado -->
+                    <div class="stat-item" style="background: #d1fae5; padding: 8px; border-radius: 6px;">
+                        <span class="stat-label" style="color: #065f46;">✅ Total Aportado:</span>
+                        <span class="stat-value" style="color: #065f46; font-weight: 700;">
+                            $${usuario.totalAportado.toLocaleString()} (${usuario.cantidadAportes} ${usuario.cantidadAportes === 1 ? 'aporte' : 'aportes'})
+                        </span>
+                    </div>
+
+                    <!-- Deuda Restante -->
+                    <div class="stat-item" style="background: ${usuario.deudaRestante > 0 ? '#fee2e2' : '#d1fae5'}; padding: 10px; border-radius: 6px; border: 2px solid ${usuario.deudaRestante > 0 ? '#991b1b' : '#065f46'};">
+                        <span class="stat-label" style="color: ${usuario.deudaRestante > 0 ? '#991b1b' : '#065f46'}; font-weight: 700;">
+                            ${usuario.deudaRestante > 0 ? '💰 Deuda Restante:' : '✅ Deuda Saldada'}
+                        </span>
+                        <span class="stat-value" style="color: ${usuario.deudaRestante > 0 ? '#991b1b' : '#065f46'}; font-weight: 800; font-size: 18px;">
+                            $${usuario.deudaRestante.toLocaleString()}
+                        </span>
+                    </div>
+
+                    <!-- Cuotas Restantes -->
+                    ${usuario.cuotas > 0 ? `
+                        <div class="stat-item" style="background: ${usuario.cuotasRestantes > 0 ? '#fef3c7' : '#d1fae5'}; padding: 8px; border-radius: 6px;">
+                            <span class="stat-label" style="color: ${usuario.cuotasRestantes > 0 ? '#92400e' : '#065f46'};">
+                                📅 Cuotas ${usuario.cuotasRestantes > 0 ? 'Restantes' : 'Completadas'}:
+                            </span>
+                            <span class="stat-value" style="color: ${usuario.cuotasRestantes > 0 ? '#92400e' : '#065f46'}; font-weight: 700;">
+                                ${usuario.cuotasRestantes} de ${usuario.cuotas}
+                                ${usuario.cuotasRestantes > 0 && usuario.deuda > 0 ? 
+                                    `<span style="font-size: 12px; display: block; margin-top: 4px;">
+                                        (≈ $${Math.round(usuario.deudaRestante / usuario.cuotasRestantes).toLocaleString()} por cuota)
+                                    </span>` 
+                                    : ''
+                                }
+                            </span>
+                        </div>
+                    ` : ''}
+                ` : `
+                    <div class="stat-item" style="background: #f3f4f6; padding: 12px; border-radius: 6px; margin-top: 8px; text-align: center;">
+                        <span class="stat-label" style="color: #6b7280;">Sin deuda asignada</span>
+                    </div>
+                `}
             </div>
             
             <div class="usuario-actions">
                 ${usuario.rol !== 'administrador' ? `
                     <button class="btn-permisos" onclick="abrirModalPermisos('${usuario._id}')">
-                        <span>🔐</span> Gestionar Permisos
+                        <span>🔒</span> Gestionar Permisos
+                    </button>
+                    <button class="btn-deuda" onclick="abrirModalDeuda('${usuario._id}')" 
+                            style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
+                                   color: white; border: none; padding: 10px 16px; border-radius: 8px; 
+                                   cursor: pointer; font-weight: 600; display: flex; align-items: center; 
+                                   gap: 6px; transition: all 0.2s ease; margin-top: 8px; width: 100%; 
+                                   justify-content: center;">
+                        <span>💰</span> Gestionar Deuda
                     </button>
                 ` : `
                     <button class="btn-admin-badge" disabled>
@@ -315,7 +345,77 @@ ${usuario.telefono ? `
     `).join('');
 }
 
-// Abrir modal de permisos
+// NUEVAS FUNCIONES PARA GESTIÓN DE DEUDA
+function abrirModalDeuda(usuarioId) {
+    usuarioDeudaSeleccionado = usuarios.find(u => u._id === usuarioId);
+    
+    if (!usuarioDeudaSeleccionado) return;
+    
+    document.getElementById('modalDeudaUsuarioNombre').textContent = usuarioDeudaSeleccionado.nombreUsuario;
+    document.getElementById('montoDeuda').value = usuarioDeudaSeleccionado.deuda || 0;
+    document.getElementById('numeroCuotas').value = usuarioDeudaSeleccionado.cuotas || 0;
+    
+    calcularValorCuota();
+    
+    document.getElementById('deudaModal').style.display = 'flex';
+}
+
+function cerrarModalDeuda() {
+    document.getElementById('deudaModal').style.display = 'none';
+    usuarioDeudaSeleccionado = null;
+}
+
+function calcularValorCuota() {
+    const monto = parseFloat(document.getElementById('montoDeuda').value) || 0;
+    const cuotas = parseInt(document.getElementById('numeroCuotas').value) || 0;
+    
+    const valorCuota = cuotas > 0 ? Math.round(monto / cuotas) : 0;
+    document.getElementById('valorCuota').textContent = '$' + valorCuota.toLocaleString();
+}
+
+async function guardarDeuda() {
+    if (!usuarioDeudaSeleccionado) return;
+    
+    const deuda = parseFloat(document.getElementById('montoDeuda').value) || 0;
+    const cuotas = parseInt(document.getElementById('numeroCuotas').value) || 0;
+    
+    if (deuda < 0 || cuotas < 0) {
+        alert('Los valores no pueden ser negativos');
+        return;
+    }
+    
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/administrador/deuda/${usuarioDeudaSeleccionado._id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ deuda, cuotas })
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Error al guardar deuda');
+        }
+        
+        const usuarioIndex = usuarios.findIndex(u => u._id === usuarioDeudaSeleccionado._id);
+        if (usuarioIndex !== -1) {
+            usuarios[usuarioIndex].deuda = deuda;
+            usuarios[usuarioIndex].cuotas = cuotas;
+        }
+        
+        mostrarMensajeExito('Deuda actualizada exitosamente');
+        cerrarModalDeuda();
+        cargarUsuarios();
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message);
+    }
+}
+
 async function abrirModalPermisos(usuarioId) {
     usuarioSeleccionado = usuarios.find(u => u._id === usuarioId);
     
@@ -325,7 +425,6 @@ async function abrirModalPermisos(usuarioId) {
     document.getElementById('modalUsuarioNombre').textContent = usuarioSeleccionado.nombreUsuario;
     document.getElementById('modalUsuarioRol').textContent = usuarioSeleccionado.rol;
     
-    // Cargar permisos actuales
     try {
         const token = localStorage.getItem('token');
         const response = await fetch(`${API_URL}/administrador/permisos/${usuarioId}`, {
@@ -341,7 +440,6 @@ async function abrirModalPermisos(usuarioId) {
         const data = await response.json();
         const permisos = data.permisos;
         
-        // Establecer checkboxes
         document.querySelectorAll('input[data-permiso]').forEach(checkbox => {
             const permiso = checkbox.dataset.permiso;
             checkbox.checked = permisos[permiso] || false;
@@ -355,17 +453,14 @@ async function abrirModalPermisos(usuarioId) {
     }
 }
 
-// Cerrar modal de permisos
 function cerrarModalPermisos() {
     document.getElementById('permisosModal').style.display = 'none';
     usuarioSeleccionado = null;
 }
 
-// Guardar permisos
 async function guardarPermisos() {
     if (!usuarioSeleccionado) return;
     
-    // Recopilar permisos del formulario
     const permisos = {};
     document.querySelectorAll('input[data-permiso]').forEach(checkbox => {
         permisos[checkbox.dataset.permiso] = checkbox.checked;
@@ -382,12 +477,10 @@ async function guardarPermisos() {
             body: JSON.stringify({ permisos })
         });
         
-        if (!response.ok) {
-            const error = await response.json();
+        if (!response.ok) {const error = await response.json();
             throw new Error(error.error || 'Error al guardar permisos');
         }
         
-        // Actualizar permisos en el array local
         const usuarioIndex = usuarios.findIndex(u => u._id === usuarioSeleccionado._id);
         if (usuarioIndex !== -1) {
             usuarios[usuarioIndex].permisos = permisos;
@@ -402,14 +495,12 @@ async function guardarPermisos() {
     }
 }
 
-// Cerrar sesión
 function cerrarSesion() {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
     window.location.href = '/index.html';
 }
 
-// Formatear fecha
 function formatearFecha(fecha) {
     const date = new Date(fecha);
     return date.toLocaleDateString('es-ES', {
@@ -419,7 +510,6 @@ function formatearFecha(fecha) {
     });
 }
 
-// Mostrar mensaje de éxito
 function mostrarMensajeExito(mensaje) {
     const div = document.createElement('div');
     div.className = 'mensaje-exito';
@@ -445,10 +535,10 @@ function mostrarMensajeExito(mensaje) {
     }, 3000);
 }
 
-// Click fuera del modal para cerrar
 window.onclick = function(event) {
     const modalPermisos = document.getElementById('permisosModal');
     const modalSocio = document.getElementById('modalRegistrarSocio');
+    const modalDeuda = document.getElementById('deudaModal');
     
     if (event.target === modalPermisos) {
         cerrarModalPermisos();
@@ -456,5 +546,9 @@ window.onclick = function(event) {
     
     if (event.target === modalSocio) {
         cerrarModalRegistrarSocio();
+    }
+    
+    if (event.target === modalDeuda) {
+        cerrarModalDeuda();
     }
 }

@@ -23,25 +23,15 @@ router.get('/usuarios', verificarAdmin, async (req, res) => {
   try {
     const empresaId = req.usuario.empresa;
     
-    // Obtener todos los usuarios de la empresa
     const usuarios = await Usuario.find({ empresa: empresaId })
       .select('-password')
       .sort({ fechaRegistro: -1 });
     
-    // Para cada usuario, obtener su último aporte
     const usuariosConAportes = await Promise.all(
       usuarios.map(async (usuario) => {
-        const ultimoAporte = await Aporte.findOne({ 
-          usuario: usuario._id,
-          empresa: empresaId
-        })
-          .sort({ fecha: -1 })
-          .limit(1);
-        
         // Obtener permisos
         let permisos = await Permiso.findOne({ usuario: usuario._id });
         
-        // Si no tiene permisos, crear permisos por defecto
         if (!permisos) {
           permisos = await Permiso.create({
             usuario: usuario._id,
@@ -58,9 +48,36 @@ router.get('/usuarios', verificarAdmin, async (req, res) => {
           });
         }
         
+        // Calcular deuda restante y cuotas restantes
+        let deudaRestante = usuario.deuda || 0;
+        let cuotasRestantes = usuario.cuotas || 0;
+        let totalAportado = 0;
+        let cantidadAportes = 0;
+        
+        if (usuario.deuda > 0) {
+          // Sumar todos los aportes del usuario (solo ingresos)
+          const aportes = await Aporte.find({
+            usuario: usuario._id,
+            empresa: empresaId,
+            tipo: 'ingreso'
+          });
+          
+          totalAportado = aportes.reduce((sum, aporte) => sum + aporte.monto, 0);
+          cantidadAportes = aportes.length;
+          
+          // Calcular deuda restante
+          deudaRestante = Math.max(0, usuario.deuda - totalAportado);
+          
+          // Calcular cuotas restantes
+          cuotasRestantes = Math.max(0, usuario.cuotas - cantidadAportes);
+        }
+        
         return {
           ...usuario.toObject(),
-          ultimoAporte: ultimoAporte || null,
+          deudaRestante,
+          cuotasRestantes,
+          totalAportado,
+          cantidadAportes,
           permisos: permisos.permisos
         };
       })
@@ -74,13 +91,59 @@ router.get('/usuarios', verificarAdmin, async (req, res) => {
   }
 });
 
+// NUEVO ENDPOINT: Actualizar deuda de un usuario
+router.put('/deuda/:usuarioId', verificarAdmin, async (req, res) => {
+  try {
+    const { usuarioId } = req.params;
+    const { deuda, cuotas } = req.body;
+    const empresaId = req.usuario.empresa;
+    
+    // Verificar que el usuario pertenezca a la empresa
+    const usuario = await Usuario.findOne({ 
+      _id: usuarioId, 
+      empresa: empresaId 
+    });
+    
+    if (!usuario) {
+      return res.status(404).json({ 
+        error: 'Usuario no encontrado' 
+      });
+    }
+    
+    // No permitir modificar deuda de administradores
+    if (usuario.rol === 'administrador') {
+      return res.status(403).json({ 
+        error: 'No se puede asignar deuda a administradores' 
+      });
+    }
+    
+    // Actualizar deuda y cuotas
+    usuario.deuda = deuda || 0;
+    usuario.cuotas = cuotas || 0;
+    await usuario.save();
+    
+    res.json({
+      mensaje: 'Deuda actualizada exitosamente',
+      usuario: {
+        id: usuario._id,
+        nombreUsuario: usuario.nombreUsuario,
+        deuda: usuario.deuda,
+        cuotas: usuario.cuotas
+      }
+    });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al actualizar deuda' });
+  }
+});
+
 // Obtener permisos de un usuario
 router.get('/permisos/:usuarioId', verificarAdmin, async (req, res) => {
   try {
     const { usuarioId } = req.params;
     const empresaId = req.usuario.empresa;
     
-    // Verificar que el usuario pertenezca a la empresa
     const usuario = await Usuario.findOne({ 
       _id: usuarioId, 
       empresa: empresaId 
@@ -92,10 +155,8 @@ router.get('/permisos/:usuarioId', verificarAdmin, async (req, res) => {
       });
     }
     
-    // Obtener permisos
     let permisos = await Permiso.findOne({ usuario: usuarioId });
     
-    // Si no tiene permisos, crear permisos por defecto
     if (!permisos) {
       permisos = await Permiso.create({
         usuario: usuarioId,
@@ -134,7 +195,6 @@ router.put('/permisos/:usuarioId', verificarAdmin, async (req, res) => {
     const { permisos } = req.body;
     const empresaId = req.usuario.empresa;
     
-    // Verificar que el usuario pertenezca a la empresa
     const usuario = await Usuario.findOne({ 
       _id: usuarioId, 
       empresa: empresaId 
@@ -146,14 +206,12 @@ router.put('/permisos/:usuarioId', verificarAdmin, async (req, res) => {
       });
     }
     
-    // No permitir modificar permisos de administradores
     if (usuario.rol === 'administrador') {
       return res.status(403).json({ 
         error: 'No se pueden modificar permisos de administradores' 
       });
     }
     
-    // Actualizar o crear permisos
     const permisosActualizados = await Permiso.findOneAndUpdate(
       { usuario: usuarioId },
       { 
@@ -181,7 +239,6 @@ router.put('/permisos/:usuarioId', verificarAdmin, async (req, res) => {
 // Obtener mis permisos (para el usuario actual)
 router.get('/mis-permisos', async (req, res) => {
   try {
-    // Los administradores tienen todos los permisos
     if (req.usuario.rol === 'administrador') {
       return res.json({
         permisos: {

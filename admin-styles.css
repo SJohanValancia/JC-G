@@ -1392,3 +1392,77 @@ input:checked + .slider:before {
 .stat-value.telefono:hover {
     color: #059669;           /* verde más fuerte al pasar el dedo */
 }
+
+/* Estilos para el modal de deuda */
+.btn-deuda {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-deuda:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.deuda-resumen {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border-left: 4px solid #f59e0b;
+}
+
+.deuda-resumen p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.deuda-resumen #valorCuota {
+    color: #2d5016;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* Ajuste de stats de deuda en la tarjeta */
+.stat-item[style*="background: #fee2e2"] {
+    animation: pulseDeuda 2s ease-in-out infinite;
+}
+
+@keyframes pulseDeuda {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .btn-deuda {
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+    
+    .deuda-resumen {
+        padding: 12px;
+    }
+    
+    .deuda-resumen #valorCuota {
+        font-size: 15px;
+    }
+}

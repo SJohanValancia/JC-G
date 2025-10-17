@@ -327,5 +327,58 @@
 </form>
     </div>
 
+    <!-- Modal de Deuda -->
+<div id="deudaModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2>💰 Gestionar Deuda</h2>
+            <button class="modal-close" onclick="cerrarModalDeuda()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="usuario-info-modal">
+                <p><strong>Usuario:</strong> <span id="modalDeudaUsuarioNombre"></span></p>
+            </div>
+
+            <form id="deudaForm">
+                <div class="form-group">
+                    <label class="form-label" for="montoDeuda">💵 Monto de la Deuda</label>
+                    <input 
+                        type="number" 
+                        class="form-input" 
+                        id="montoDeuda" 
+                        placeholder="Ej: 500000"
+                        min="0"
+                        step="1000"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="numeroCuotas">📅 Número de Cuotas</label>
+                    <input 
+                        type="number" 
+                        class="form-input" 
+                        id="numeroCuotas" 
+                        placeholder="Ej: 12"
+                        min="0"
+                        required
+                    >
+                </div>
+
+                <div class="deuda-resumen" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                    <p style="font-size: 14px; color: #666; margin-bottom: 8px;">
+                        <strong>Valor por cuota:</strong> 
+                        <span id="valorCuota" style="color: #2d5016; font-weight: 600;">$0</span>
+                    </p>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="cerrarModalDeuda()">Cancelar</button>
+            <button class="btn-primary" onclick="guardarDeuda()">Guardar Deuda</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
