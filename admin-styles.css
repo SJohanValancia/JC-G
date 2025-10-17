@@ -1381,3 +1381,14 @@ input:checked + .slider:before {
         width: 100%;
     }
 }
+
+/* Teléfono verde-clickeable */
+.stat-value.telefono {
+    color: #10b981;           /* verde clarito */
+    cursor: pointer;
+    text-decoration: none;    /* parece texto plano */
+    transition: color .2s;
+}
+.stat-value.telefono:hover {
+    color: #059669;           /* verde más fuerte al pasar el dedo */
+}

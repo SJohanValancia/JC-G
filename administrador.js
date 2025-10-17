@@ -270,12 +270,14 @@ function mostrarUsuarios(usuarios) {
                     </div>
                 ` : ''}
                 
-                ${usuario.telefono ? `
-                    <div class="stat-item">
-                        <span class="stat-label">Teléfono:</span>
-                        <span class="stat-value">${usuario.telefono}</span>
-                    </div>
-                ` : ''}
+${usuario.telefono ? `
+    <div class="stat-item">
+        <span class="stat-label">Teléfono:</span>
+        <a class="stat-value telefono" href="tel:${usuario.telefono}">
+            ${usuario.telefono}
+        </a>
+    </div>
+` : ''}
                 
                 <div class="stat-item">
                     <span class="stat-label">Último aporte:</span>
