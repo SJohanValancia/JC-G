@@ -13,7 +13,8 @@ const app = express();
 
 // Middlewares
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' })); // ← CAMBIA ESTA LÍNEA
+app.use(express.urlencoded({ limit: '50mb', extended: true })); // ← AGREGA ESTA LÍNEA
 
 // Servir archivos estáticos desde la raíz del proyecto
 app.use(express.static(path.join(__dirname)));

@@ -2156,6 +2156,18 @@
     }
 }
 
+.foto-input-container {
+    border: 2px dashed #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
     </style>
 </head>
 <body>
@@ -2906,36 +2918,136 @@ async function guardarAnimal(e) {
     });
 
     // Manejo de fotos
+// Manejo de fotos con compresión
 let fotoAnimalBase64 = null;
 let fotoRegistroBase64 = null;
 
+// Función para comprimir imagen
+// Reemplaza la función comprimirImagen completa:
+function comprimirImagen(file, maxWidth = 600, quality = 0.6) {
+    return new Promise((resolve, reject) => {
+        // Validar tamaño antes de procesar
+        if (file.size > 10 * 1024 * 1024) { // 10MB
+            reject(new Error('La imagen es demasiado grande. Máximo 10MB'));
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                // Reducir más agresivamente
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convertir a JPEG con mayor compresión
+                const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+                
+                // Verificar tamaño final
+                const sizeKB = (compressedBase64.length * 0.75) / 1024;
+                console.log(`Imagen comprimida: ${sizeKB.toFixed(2)} KB`);
+                
+                resolve(compressedBase64);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
 // Preview foto animal
-document.getElementById('fotoAnimal').addEventListener('change', function(e) {
+// Reemplaza los dos event listeners:
+
+// Preview foto animal
+document.getElementById('fotoAnimal').addEventListener('change', async function(e) {
     const file = e.target.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            fotoAnimalBase64 = event.target.result;
+        try {
+            const container = document.getElementById('fotoAnimalContainer');
+            container.style.opacity = '0.6';
+            
+            // Comprimir con ajustes más agresivos
+            fotoAnimalBase64 = await comprimirImagen(file, 600, 0.5); // ← CAMBIA ESTOS VALORES
+            
             document.getElementById('previewFotoAnimal').src = fotoAnimalBase64;
             document.getElementById('previewFotoAnimal').classList.add('active');
             document.getElementById('removeFotoAnimal').classList.add('active');
-        };
-        reader.readAsDataURL(file);
+            
+            container.style.opacity = '1';
+            
+            const sizeKB = (fotoAnimalBase64.length * 0.75) / 1024;
+            console.log('Tamaño final imagen animal:', sizeKB.toFixed(2) + ' KB');
+        } catch (error) {
+            console.error('Error al procesar imagen:', error);
+            alert(error.message || 'Error al procesar la imagen. Intenta con otra más pequeña.');
+            e.target.value = '';
+        }
     }
 });
 
 // Preview foto registro
-document.getElementById('fotoRegistro').addEventListener('change', function(e) {
+document.getElementById('fotoRegistro').addEventListener('change', async function(e) {
     const file = e.target.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            fotoRegistroBase64 = event.target.result;
+        try {
+            const container = document.getElementById('fotoRegistroContainer');
+            container.style.opacity = '0.6';
+            
+            // Comprimir con ajustes más agresivos
+            fotoRegistroBase64 = await comprimirImagen(file, 600, 0.5); // ← CAMBIA ESTOS VALORES
+            
             document.getElementById('previewFotoRegistro').src = fotoRegistroBase64;
             document.getElementById('previewFotoRegistro').classList.add('active');
             document.getElementById('removeFotoRegistro').classList.add('active');
-        };
-        reader.readAsDataURL(file);
+            
+            container.style.opacity = '1';
+            
+            const sizeKB = (fotoRegistroBase64.length * 0.75) / 1024;
+            console.log('Tamaño final imagen registro:', sizeKB.toFixed(2) + ' KB');
+        } catch (error) {
+            console.error('Error al procesar imagen:', error);
+            alert(error.message || 'Error al procesar la imagen. Intenta con otra más pequeña.');
+            e.target.value = '';
+        }
+    }
+});
+// Preview foto registro
+document.getElementById('fotoRegistro').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        try {
+            // Mostrar loading
+            const container = document.getElementById('fotoRegistroContainer');
+            container.style.opacity = '0.6';
+            
+            // Comprimir imagen
+            fotoRegistroBase64 = await comprimirImagen(file, 800, 0.7);
+            
+            // Mostrar preview
+            document.getElementById('previewFotoRegistro').src = fotoRegistroBase64;
+            document.getElementById('previewFotoRegistro').classList.add('active');
+            document.getElementById('removeFotoRegistro').classList.add('active');
+            
+            container.style.opacity = '1';
+            
+            console.log('Tamaño de imagen registro:', (fotoRegistroBase64.length / 1024).toFixed(2) + ' KB');
+        } catch (error) {
+            console.error('Error al procesar imagen:', error);
+            alert('Error al procesar la imagen. Intenta con otra.');
+        }
     }
 });
 
