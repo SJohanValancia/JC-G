@@ -215,7 +215,7 @@ const gastos = await Gasto.aggregate([
       empresa: mongoose.Types.ObjectId(empresaId),
       ...visFilter
     } 
-  },,
+  },
       {
         $group: {
           _id: null,
