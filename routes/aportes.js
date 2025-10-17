@@ -1,32 +1,29 @@
-
 const mongoose = require('mongoose');
-
 const express = require('express');
 const router = express.Router();
 const Aporte = require('../models/Aporte');
+const Gasto = require('../models/Gasto');
 const authMiddleware = require('../middleware/auth');
 const { verificarPermiso } = require('../middleware/permisos');
-
+const { filtroVisibilidad } = require('../middleware/filtros');
 
 router.use(authMiddleware);
 
-const { filtroVisibilidad } = require('../middleware/filtros');
-
-// routes/aportes.js
+// Obtener aportes de la empresa
 router.get('/empresa/:empresaId', verificarPermiso('aportes'), async (req, res) => {
   try {
     if (req.usuario.empresa.toString() !== req.params.empresaId)
       return res.status(403).json({ error: 'No autorizado' });
 
     const baseFilter = { empresa: req.params.empresaId };
-const visFilter = filtroVisibilidad(req, 'usuario');
+    const visFilter = filtroVisibilidad(req, 'usuario');
     const aportes = await Aporte.find({ ...baseFilter, ...visFilter })
                                 .populate('usuario', 'nombreUsuario')
                                 .sort({ fecha: -1 });
 
     res.json(aportes);
   } catch (error) {
-    console.error(error);
+    console.error('Error en /empresa/:empresaId:', error);
     res.status(500).json({ error: 'Error al obtener los aportes' });
   }
 });
@@ -54,24 +51,22 @@ router.post('/', verificarPermiso('aportes'), async (req, res) => {
       });
     }
 
-const aporte = await Aporte.create({
-  monto,
-  descripcion,
-  empresa,
-  usuario: req.usuario._id,
-  tipo: req.body.tipo || 'ingreso'  // AGREGAR ESTA LÍNEA
-});
+    const aporte = await Aporte.create({
+      monto,
+      descripcion,
+      empresa,
+      usuario: req.usuario._id,
+      tipo: req.body.tipo || 'ingreso'
+    });
 
     await aporte.populate('usuario', 'nombreUsuario');
-
     res.status(201).json(aporte);
 
   } catch (error) {
-    console.error(error);
+    console.error('Error en POST /:', error);
     res.status(500).json({ error: 'Error al crear el aporte' });
   }
 });
-
 
 // Obtener un aporte específico
 router.get('/:id', verificarPermiso('aportes'), async (req, res) => {
@@ -93,7 +88,7 @@ router.get('/:id', verificarPermiso('aportes'), async (req, res) => {
     res.json(aporte);
 
   } catch (error) {
-    console.error(error);
+    console.error('Error en GET /:id:', error);
     res.status(500).json({ error: 'Error al obtener el aporte' });
   }
 });
@@ -129,7 +124,7 @@ router.put('/:id', verificarPermiso('editar_propios'), async (req, res) => {
     res.json(aporte);
 
   } catch (error) {
-    console.error(error);
+    console.error('Error en PUT /:id:', error);
     res.status(500).json({ error: 'Error al actualizar el aporte' });
   }
 });
@@ -154,7 +149,7 @@ router.delete('/:id', verificarPermiso('eliminar_propios'), async (req, res) => 
     res.json({ mensaje: 'Aporte eliminado exitosamente' });
 
   } catch (error) {
-    console.error(error);
+    console.error('Error en DELETE /:id:', error);
     res.status(500).json({ error: 'Error al eliminar el aporte' });
   }
 });
@@ -168,18 +163,23 @@ router.get('/estadisticas/:empresaId', verificarPermiso('reportes'), async (req,
       return res.status(403).json({ error: 'No autorizado' });
     }
 
-const baseFilter = { empresa: mongoose.Types.ObjectId(empresaId) };
-const visFilter = filtroVisibilidad(req, 'usuario');
+    // Convertir empresaId a ObjectId
+    const empresaObjectId = new mongoose.Types.ObjectId(empresaId);
+    
+    // Obtener filtro de visibilidad
+    const visFilter = filtroVisibilidad(req, 'usuario');
+    
+    // Construir filtro para agregación
+    let matchFilter = { empresa: empresaObjectId, tipo: 'ingreso' };
+    
+    // Si visFilter tiene restricciones de usuario, agregarlas
+    if (visFilter.usuario) {
+      matchFilter.usuario = visFilter.usuario;
+    }
 
     // Total de ingresos (aportes)
     const ingresos = await Aporte.aggregate([
-      { 
-        $match: { 
-          ...baseFilter, 
-          ...visFilter,
-          tipo: 'ingreso' 
-        } 
-      },
+      { $match: matchFilter },
       {
         $group: {
           _id: null,
@@ -190,14 +190,9 @@ const visFilter = filtroVisibilidad(req, 'usuario');
     ]);
 
     // Total de egresos (retiros)
+    matchFilter.tipo = 'egreso';
     const egresos = await Aporte.aggregate([
-      { 
-        $match: { 
-          ...baseFilter, 
-          ...visFilter,
-          tipo: 'egreso' 
-        } 
-      },
+      { $match: matchFilter },
       {
         $group: {
           _id: null,
@@ -207,15 +202,16 @@ const visFilter = filtroVisibilidad(req, 'usuario');
       }
     ]);
 
-    // Total de gastos (importar modelo Gasto)
-const Gasto = require('../models/Gasto');
-const gastos = await Gasto.aggregate([
-  { 
-    $match: { 
-      empresa: mongoose.Types.ObjectId(empresaId),
-      ...visFilter
-    } 
-  },
+    // Total de gastos
+    let gastosFilter = { empresa: empresaObjectId };
+    
+    // Si hay filtro de visibilidad, aplicarlo a usuarioRegistro
+    if (visFilter.usuario) {
+      gastosFilter.usuarioRegistro = visFilter.usuario;
+    }
+
+    const gastos = await Gasto.aggregate([
+      { $match: gastosFilter },
       {
         $group: {
           _id: null,
@@ -247,8 +243,12 @@ const gastos = await Gasto.aggregate([
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al obtener estadísticas' });
+    console.error('Error en /estadisticas/:empresaId:', error);
+    console.error('Stack:', error.stack);
+    res.status(500).json({ 
+      error: 'Error al obtener estadísticas',
+      mensaje: error.message 
+    });
   }
 });
 
