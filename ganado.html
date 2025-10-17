@@ -1929,6 +1929,232 @@
     }
 }
 
+/* Estilos para las fotos */
+.foto-perfil-container {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #2d5016;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.foto-perfil-container:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(45, 80, 22, 0.3);
+}
+
+.foto-perfil-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.foto-perfil-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #999;
+}
+
+/* Botón ver registro minimalista */
+.btn-ver-registro {
+    background: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-ver-registro:hover {
+    border-color: #2d5016;
+    color: #2d5016;
+    background: rgba(45, 80, 22, 0.05);
+}
+
+/* Modal para ver fotos */
+.modal-foto-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+    cursor: pointer;
+}
+
+.modal-foto-overlay.active {
+    display: flex;
+}
+
+.modal-foto-content {
+    max-width: 90vw;
+    max-height: 90vh;
+    position: relative;
+    animation: zoomIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-foto-img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-foto-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.modal-foto-close:hover {
+    transform: rotate(90deg);
+    background: #f0f0f0;
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Inputs de foto en el formulario */
+.foto-input-container {
+    border: 2px dashed #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.foto-input-container:hover {
+    border-color: #2d5016;
+    background: rgba(45, 80, 22, 0.02);
+}
+
+.foto-input-container input[type="file"] {
+    display: none;
+}
+
+.foto-preview {
+    width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    margin-top: 12px;
+    object-fit: cover;
+    display: none;
+}
+
+.foto-preview.active {
+    display: block;
+}
+
+.foto-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.foto-icon {
+    font-size: 40px;
+    color: #999;
+}
+
+.foto-text {
+    color: #666;
+    font-size: 14px;
+}
+
+.foto-remove-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.foto-remove-btn.active {
+    display: flex;
+}
+
+.foto-remove-btn:hover {
+    background: #b91c1c;
+    transform: scale(1.1);
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+    .foto-perfil-container {
+        width: 38px;
+        height: 38px;
+        border-width: 2px;
+    }
+
+    td:first-child {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .modal-foto-content {
+        max-width: 95vw;
+        max-height: 85vh;
+    }
+
+    .modal-foto-close {
+        top: -35px;
+        width: 32px;
+        height: 32px;
+    }
+}
 
     </style>
 </head>
@@ -2037,18 +2263,19 @@
 
                 <div class="table-container">
                     <table id="ganadoTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Especie</th>
-                                <th>Raza</th>
-                                <th>Género</th>
-                                <th>Peso</th>
-                                <th>Estado</th>
-                                <th>Fecha Registro</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
+<thead>
+    <tr>
+        <th>Animal</th>
+        <th>Especie</th>
+        <th>Raza</th>
+        <th>Género</th>
+        <th>Peso</th>
+        <th>Estado</th>
+        <th>Fecha Registro</th>
+        <th>Foto Registro</th>
+        <th>Acciones</th>
+    </tr>
+</thead>
                         <tbody id="ganadoTableBody">
                             <tr>
                                 <td colspan="8">
@@ -2076,119 +2303,156 @@
 
             <div class="error-message" id="modalError"></div>
 
-            <form id="animalForm">
-                <input type="hidden" id="animalId">
+          <form id="animalForm">
+    <input type="hidden" id="animalId">
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="identificacion">Identificación *</label>
-                        <input 
-                            type="text" 
-                            class="form-input" 
-                            id="identificacion" 
-                            placeholder="Ej: BOV-001"
-                            required
-                        >
-                    </div>
+    <!-- Fotos -->
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">📷 Foto del Animal</label>
+            <div class="foto-input-container" id="fotoAnimalContainer">
+                <button type="button" class="foto-remove-btn" id="removeFotoAnimal">×</button>
+                <label class="foto-label" for="fotoAnimal">
+                    <span class="foto-icon">📸</span>
+                    <span class="foto-text">Tomar foto o buscar</span>
+                </label>
+                <input type="file" id="fotoAnimal" accept="image/*" capture="environment">
+                <img id="previewFotoAnimal" class="foto-preview" alt="Preview">
+            </div>
+        </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="especie">Especie *</label>
-                        <input 
-                            type="text" 
-                            class="form-input" 
-                            id="especie" 
-                            placeholder="Ej: Bovino, Porcino, etc."
-                            required
-                        >
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="genero">Género *</label>
-                        <select class="form-select" id="genero" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="Macho">Macho</option>
-                            <option value="Hembra">Hembra</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="estado">Estado</label>
-                        <select class="form-select" id="estado">
-                            <option value="Activo">Activo</option>
-                            <option value="Vendido">Vendido</option>
-                            <option value="Muerto">Muerto</option>
-                            <option value="En tratamiento">En tratamiento</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="raza">Raza</label>
-                        <input 
-                            type="text" 
-                            class="form-input" 
-                            id="raza" 
-                            placeholder="Ej: Brahman"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="peso">Peso (kg)</label>
-                        <input 
-                            type="number" 
-                            class="form-input" 
-                            id="peso" 
-                            placeholder="Ej: 450"
-                            min="0"
-                            step="0.1"
-                        >
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="fechaNacimiento">Fecha de Nacimiento</label>
-                        <input 
-                            type="date" 
-                            class="form-input" 
-                            id="fechaNacimiento"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="color">Color</label>
-                        <input 
-                            type="text" 
-                            class="form-input" 
-                            id="color" 
-                            placeholder="Ej: Rojo"
-                        >
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="observaciones">Observaciones</label>
-                    <textarea 
-                        class="form-input" 
-                        id="observaciones" 
-                        placeholder="Notas adicionales sobre el animal..."
-                    ></textarea>
-                </div>
-
-                <div style="display: flex; gap: 12px; margin-top: 30px;">
-                    <button type="button" class="btn btn-secondary" id="cancelarAnimal" style="flex: 1;">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary" id="guardarAnimal" style="flex: 2;">
-                        Guardar
-                    </button>
-                </div>
-            </form>
+        <div class="form-group">
+            <label class="form-label">📋 Foto del Registro</label>
+            <div class="foto-input-container" id="fotoRegistroContainer">
+                <button type="button" class="foto-remove-btn" id="removeFotoRegistro">×</button>
+                <label class="foto-label" for="fotoRegistro">
+                    <span class="foto-icon">📄</span>
+                    <span class="foto-text">Tomar foto o buscar</span>
+                </label>
+                <input type="file" id="fotoRegistro" accept="image/*" capture="environment">
+                <img id="previewFotoRegistro" class="foto-preview" alt="Preview">
+            </div>
         </div>
     </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label" for="identificacion">Identificación *</label>
+            <input 
+                type="text" 
+                class="form-input" 
+                id="identificacion" 
+                placeholder="Ej: BOV-001"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="especie">Especie *</label>
+            <input 
+                type="text" 
+                class="form-input" 
+                id="especie" 
+                placeholder="Ej: Bovino, Porcino, etc."
+                required
+            >
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label" for="genero">Género *</label>
+            <select class="form-select" id="genero" required>
+                <option value="">Seleccionar...</option>
+                <option value="Macho">Macho</option>
+                <option value="Hembra">Hembra</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="estado">Estado</label>
+            <select class="form-select" id="estado">
+                <option value="Activo">Activo</option>
+                <option value="Vendido">Vendido</option>
+                <option value="Muerto">Muerto</option>
+                <option value="En tratamiento">En tratamiento</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label" for="raza">Raza</label>
+            <input 
+                type="text" 
+                class="form-input" 
+                id="raza" 
+                placeholder="Ej: Brahman"
+            >
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="peso">Peso (kg)</label>
+            <input 
+                type="number" 
+                class="form-input" 
+                id="peso" 
+                placeholder="Ej: 450"
+                min="0"
+                step="0.1"
+            >
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label" for="fechaNacimiento">Fecha de Nacimiento</label>
+            <input 
+                type="date" 
+                class="form-input" 
+                id="fechaNacimiento"
+            >
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="color">Color</label>
+            <input 
+                type="text" 
+                class="form-input" 
+                id="color" 
+                placeholder="Ej: Rojo"
+            >
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label" for="observaciones">Observaciones</label>
+        <textarea 
+            class="form-input" 
+            id="observaciones" 
+            placeholder="Notas adicionales sobre el animal..."
+        ></textarea>
+    </div>
+
+    <div style="display: flex; gap: 12px; margin-top: 30px;">
+        <button type="button" class="btn btn-secondary" id="cancelarAnimal" style="flex: 1;">
+            Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary" id="guardarAnimal" style="flex: 2;">
+            Guardar
+        </button>
+    </div>
+</form>
+        </div>
+    </div>
+
+    <!-- Modal para ver fotos -->
+<div class="modal-foto-overlay" id="modalFoto">
+    <button class="modal-foto-close" id="closeFoto">×</button>
+    <div class="modal-foto-content">
+        <img id="fotoAmpliada" class="modal-foto-img" alt="Foto ampliada">
+    </div>
+</div>
 
     <!-- Toast de Éxito -->
     <div class="success-toast" id="successToast"></div>
@@ -2345,7 +2609,7 @@ function renderizarTabla(data) {
     if (data.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="8">
+                <td colspan="9">
                     <div class="empty-state">
                         <div class="empty-state-icon">🐄</div>
                         <p>No hay animales registrados</p>
@@ -2359,7 +2623,17 @@ function renderizarTabla(data) {
 
     tbody.innerHTML = data.map(animal => `
         <tr>
-            <td data-label="ID"><strong>${animal.identificacion}</strong></td>
+            <td data-label="Animal">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="foto-perfil-container" onclick="verFoto('${animal.fotoAnimal || ''}', 'animal')">
+                        ${animal.fotoAnimal ? 
+                            `<img src="${animal.fotoAnimal}" class="foto-perfil-img" alt="Foto">` :
+                            `<div class="foto-perfil-placeholder">🐄</div>`
+                        }
+                    </div>
+                    <strong>${animal.identificacion}</strong>
+                </div>
+            </td>
             <td data-label="Especie">${animal.especie}</td>
             <td data-label="Raza">${animal.raza || '-'}</td>
             <td data-label="Género">${animal.genero}</td>
@@ -2370,6 +2644,14 @@ function renderizarTabla(data) {
                 </span>
             </td>
             <td data-label="Registro">${formatearFecha(animal.fechaRegistro)}</td>
+            <td data-label="Foto Registro">
+                ${animal.fotoRegistro ? 
+                    `<button class="btn-ver-registro" onclick="verFoto('${animal.fotoRegistro}', 'registro')">
+                        📄 Ver
+                    </button>` :
+                    `<span style="color: #999; font-size: 12px;">Sin foto</span>`
+                }
+            </td>
             <td data-label="Acciones">
                 <div class="actions-cell">
                     ${permisosUsuario.editar_propios ? `
@@ -2387,7 +2669,7 @@ function renderizarTabla(data) {
         </tr>
     `).join('');
 }
-    // Filtrar tabla
+// Filtrar tabla
     function filtrarTabla() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         const filtrados = ganadoData.filter(animal => 
@@ -2399,123 +2681,150 @@ function renderizarTabla(data) {
     }
 
     // Abrir modal nuevo
-    function abrirModalNuevo() {
-        if (!permisosUsuario.ganado) {
-            alert('No tienes permiso para registrar ganado');
-            return;
-        }
+function abrirModalNuevo() {
+    if (!permisosUsuario.ganado) {
+        alert('No tienes permiso para registrar ganado');
+        return;
+    }
+    
+    document.getElementById('modalTitle').innerHTML = '🐄 Registrar Nuevo Animal';
+    document.getElementById('animalForm').reset();
+    document.getElementById('animalId').value = '';
+    document.getElementById('modalError').style.display = 'none';
+    
+    // Limpiar previews de fotos
+    fotoAnimalBase64 = null;
+    fotoRegistroBase64 = null;
+    document.getElementById('previewFotoAnimal').classList.remove('active');
+    document.getElementById('previewFotoRegistro').classList.remove('active');
+    document.getElementById('removeFotoAnimal').classList.remove('active');
+    document.getElementById('removeFotoRegistro').classList.remove('active');
+    
+    document.getElementById('modalAnimal').classList.add('active');
+}
+    // Editar animal
+async function editarAnimal(id) {
+    if (!permisosUsuario.editar_propios) {
+        alert('No tienes permiso para editar registros');
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/ganado/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Error al cargar animal');
+
+        const animal = await response.json();
         
-document.getElementById('modalTitle').innerHTML = '🐄 Registrar Nuevo Animal';
-        document.getElementById('animalForm').reset();
-        document.getElementById('animalId').value = '';
+        document.getElementById('modalTitle').innerHTML = '✏️ Editar Animal';
+        document.getElementById('animalId').value = animal._id;
+        document.getElementById('identificacion').value = animal.identificacion;
+        document.getElementById('especie').value = animal.especie;
+        document.getElementById('genero').value = animal.genero;
+        document.getElementById('estado').value = animal.estado;
+        document.getElementById('raza').value = animal.raza || '';
+        document.getElementById('peso').value = animal.peso || '';
+        document.getElementById('color').value = animal.color || '';
+        document.getElementById('observaciones').value = animal.observaciones || '';
+        
+        if (animal.fechaNacimiento) {
+            document.getElementById('fechaNacimiento').value = animal.fechaNacimiento.split('T')[0];
+        }
+
+        // Cargar fotos si existen
+        if (animal.fotoAnimal) {
+            fotoAnimalBase64 = animal.fotoAnimal;
+            document.getElementById('previewFotoAnimal').src = animal.fotoAnimal;
+            document.getElementById('previewFotoAnimal').classList.add('active');
+            document.getElementById('removeFotoAnimal').classList.add('active');
+        }
+
+        if (animal.fotoRegistro) {
+            fotoRegistroBase64 = animal.fotoRegistro;
+            document.getElementById('previewFotoRegistro').src = animal.fotoRegistro;
+            document.getElementById('previewFotoRegistro').classList.add('active');
+            document.getElementById('removeFotoRegistro').classList.add('active');
+        }
+
         document.getElementById('modalError').style.display = 'none';
         document.getElementById('modalAnimal').classList.add('active');
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarError('Error al cargar el animal');
     }
-
-    // Editar animal
-    async function editarAnimal(id) {
-        if (!permisosUsuario.editar_propios) {
-            alert('No tienes permiso para editar registros');
-            return;
-        }
-
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/ganado/${id}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) throw new Error('Error al cargar animal');
-
-            const animal = await response.json();
-            
-            document.getElementById('modalTitle').innerHTML = '✏️ Editar Animal';
-            document.getElementById('animalId').value = animal._id;
-            document.getElementById('identificacion').value = animal.identificacion;
-            document.getElementById('especie').value = animal.especie;
-            document.getElementById('genero').value = animal.genero;
-            document.getElementById('estado').value = animal.estado;
-            document.getElementById('raza').value = animal.raza || '';
-            document.getElementById('peso').value = animal.peso || '';
-            document.getElementById('color').value = animal.color || '';
-            document.getElementById('observaciones').value = animal.observaciones || '';
-            
-            if (animal.fechaNacimiento) {
-                document.getElementById('fechaNacimiento').value = animal.fechaNacimiento.split('T')[0];
-            }
-
-            document.getElementById('modalError').style.display = 'none';
-            document.getElementById('modalAnimal').classList.add('active');
-        } catch (error) {
-            console.error('Error:', error);
-            mostrarError('Error al cargar el animal');
-        }
-    }
-
+}
     // Guardar animal
-    async function guardarAnimal(e) {
-        e.preventDefault();
+async function guardarAnimal(e) {
+    e.preventDefault();
 
-        const animalId = document.getElementById('animalId').value;
-        
-        if (!animalId && !permisosUsuario.ganado) {
-            alert('No tienes permiso para crear ganado');
-            return;
-        }
-
-        if (animalId && !permisosUsuario.editar_propios) {
-            alert('No tienes permiso para editar registros');
-            return;
-        }
-
-        const data = {
-            identificacion: document.getElementById('identificacion').value,
-            especie: document.getElementById('especie').value,
-            genero: document.getElementById('genero').value,
-            estado: document.getElementById('estado').value,
-            raza: document.getElementById('raza').value,
-            peso: document.getElementById('peso').value ? parseFloat(document.getElementById('peso').value) : undefined,
-            color: document.getElementById('color').value,
-            observaciones: document.getElementById('observaciones').value,
-            fechaNacimiento: document.getElementById('fechaNacimiento').value || undefined,
-            empresa: empresaId
-        };
-
-        try {
-            const token = localStorage.getItem('token');
-            const url = animalId 
-                ? `${API_URL}/ganado/${animalId}`
-                : `${API_URL}/ganado`;
-            
-            const method = animalId ? 'PUT' : 'POST';
-
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Error al guardar');
-            }
-
-            cerrarModal();
-            await cargarGanado();
-            await cargarEstadisticas();
-            mostrarExito(animalId ? 'Animal actualizado exitosamente' : 'Animal registrado exitosamente');
-        } catch (error) {
-            console.error('Error:', error);
-            document.getElementById('modalError').textContent = error.message;
-            document.getElementById('modalError').style.display = 'block';
-        }
+    const animalId = document.getElementById('animalId').value;
+    
+    if (!animalId && !permisosUsuario.ganado) {
+        alert('No tienes permiso para crear ganado');
+        return;
     }
 
+    if (animalId && !permisosUsuario.editar_propios) {
+        alert('No tienes permiso para editar registros');
+        return;
+    }
+
+    const data = {
+        identificacion: document.getElementById('identificacion').value,
+        especie: document.getElementById('especie').value,
+        genero: document.getElementById('genero').value,
+        estado: document.getElementById('estado').value,
+        raza: document.getElementById('raza').value,
+        peso: document.getElementById('peso').value ? parseFloat(document.getElementById('peso').value) : undefined,
+        color: document.getElementById('color').value,
+        observaciones: document.getElementById('observaciones').value,
+        fechaNacimiento: document.getElementById('fechaNacimiento').value || undefined,
+        fotoAnimal: fotoAnimalBase64,
+        fotoRegistro: fotoRegistroBase64,
+        empresa: empresaId
+    };
+
+    try {
+        const token = localStorage.getItem('token');
+        const url = animalId 
+            ? `${API_URL}/ganado/${animalId}`
+            : `${API_URL}/ganado`;
+        
+        const method = animalId ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Error al guardar');
+        }
+
+        cerrarModal();
+        await cargarGanado();
+        await cargarEstadisticas();
+        mostrarExito(animalId ? 'Animal actualizado exitosamente' : 'Animal registrado exitosamente');
+        
+        // Limpiar fotos
+        fotoAnimalBase64 = null;
+        fotoRegistroBase64 = null;
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('modalError').textContent = error.message;
+        document.getElementById('modalError').style.display = 'block';
+    }
+}
     // Eliminar animal
     async function eliminarAnimal(id) {
         if (!permisosUsuario.eliminar_propios) {
@@ -2595,6 +2904,80 @@ document.getElementById('modalTitle').innerHTML = '🐄 Registrar Nuevo Animal';
     window.addEventListener('resize', () => {
         if (window.innerWidth > 768) sidebar.classList.remove('open');
     });
+
+    // Manejo de fotos
+let fotoAnimalBase64 = null;
+let fotoRegistroBase64 = null;
+
+// Preview foto animal
+document.getElementById('fotoAnimal').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            fotoAnimalBase64 = event.target.result;
+            document.getElementById('previewFotoAnimal').src = fotoAnimalBase64;
+            document.getElementById('previewFotoAnimal').classList.add('active');
+            document.getElementById('removeFotoAnimal').classList.add('active');
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Preview foto registro
+document.getElementById('fotoRegistro').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            fotoRegistroBase64 = event.target.result;
+            document.getElementById('previewFotoRegistro').src = fotoRegistroBase64;
+            document.getElementById('previewFotoRegistro').classList.add('active');
+            document.getElementById('removeFotoRegistro').classList.add('active');
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Remover foto animal
+document.getElementById('removeFotoAnimal').addEventListener('click', function(e) {
+    e.stopPropagation();
+    fotoAnimalBase64 = null;
+    document.getElementById('fotoAnimal').value = '';
+    document.getElementById('previewFotoAnimal').classList.remove('active');
+    document.getElementById('removeFotoAnimal').classList.remove('active');
+});
+
+// Remover foto registro
+document.getElementById('removeFotoRegistro').addEventListener('click', function(e) {
+    e.stopPropagation();
+    fotoRegistroBase64 = null;
+    document.getElementById('fotoRegistro').value = '';
+    document.getElementById('previewFotoRegistro').classList.remove('active');
+    document.getElementById('removeFotoRegistro').classList.remove('active');
+});
+
+// Ver foto ampliada
+function verFoto(fotoBase64, tipo) {
+    if (!fotoBase64) {
+        alert('No hay foto disponible');
+        return;
+    }
+    document.getElementById('fotoAmpliada').src = fotoBase64;
+    document.getElementById('modalFoto').classList.add('active');
+}
+
+// Cerrar modal foto
+document.getElementById('closeFoto').addEventListener('click', function() {
+    document.getElementById('modalFoto').classList.remove('active');
+});
+
+document.getElementById('modalFoto').addEventListener('click', function(e) {
+    if (e.target.id === 'modalFoto') {
+        document.getElementById('modalFoto').classList.remove('active');
+    }
+});
+
 </script>
 
 </body>

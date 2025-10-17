@@ -5,11 +5,11 @@ const ganadoSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-especie: {
-  type: String,
-  required: true,
-  trim: true
-},
+  especie: {
+    type: String,
+    required: true,
+    trim: true
+  },
   raza: {
     type: String,
     trim: true
@@ -39,6 +39,14 @@ especie: {
     type: String,
     trim: true
   },
+  fotoAnimal: {
+    type: String,  // Guardará la imagen en base64
+    default: null
+  },
+  fotoRegistro: {
+    type: String,  // Guardará la imagen en base64
+    default: null
+  },
   empresa: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Empresa',
@@ -59,7 +67,6 @@ especie: {
   }
 });
 
-// Actualizar fecha de última actualización antes de guardar
 ganadoSchema.pre('save', function(next) {
   this.ultimaActualizacion = Date.now();
   next();
