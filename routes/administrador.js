@@ -279,4 +279,41 @@ router.get('/mis-permisos', async (req, res) => {
   }
 });
 
+// Obtener mi deuda (para el usuario actual)
+router.get('/mi-deuda', async (req, res) => {
+  try {
+    const usuario = await Usuario.findById(req.usuario._id);
+    
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    let deudaRestante = usuario.deuda || 0;
+    let totalAportado = 0;
+
+    if (usuario.deuda > 0) {
+      // Sumar todos los aportes del usuario (solo ingresos)
+      const aportes = await Aporte.find({
+        usuario: usuario._id,
+        empresa: req.usuario.empresa,
+        tipo: 'ingreso'
+      });
+      
+      totalAportado = aportes.reduce((sum, aporte) => sum + aporte.monto, 0);
+      deudaRestante = Math.max(0, usuario.deuda - totalAportado);
+    }
+
+    res.json({
+      deudaOriginal: usuario.deuda || 0,
+      totalAportado,
+      deudaRestante,
+      cuotas: usuario.cuotas || 0
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener deuda' });
+  }
+});
+
 module.exports = router;
